@@ -1,24 +1,25 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
+/**
+ * RootLayout: Archivo principal de configuración visual y de navegación del framework Expo Router.
+ * 
+ * Para cumplir con los requisitos del TFG (sostenibilidad energética y reducción de consumo),
+ * se ha eliminado el soporte de Light Theme y se ha inyectado directamente el `DarkTheme` estricto en
+ * toda la aplicación. De esta forma, obligamos a un bajo consumo de batería (píxeles apagados en OLED).
+ * 
+ * Además, configuramos la navegación en Stack para ocular los "headers" que no necesitemos en el modo carrera.
+ */
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DarkTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
-      <StatusBar style="auto" />
+      {/* StatusBar configura la barra de arriba del sistema donde aparece la hora/batería para que se vea bien en fondo oscuro */}
+      <StatusBar style="light" />
     </ThemeProvider>
   );
 }
