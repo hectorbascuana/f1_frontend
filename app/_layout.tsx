@@ -30,6 +30,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="nueva-partida" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="(partidas)/[id]" options={{ headerShown: false }} />
         </Stack>
         {/* StatusBar configura la barra de arriba del sistema donde aparece la hora/batería para que se vea bien en fondo oscuro */}
         <StatusBar style="light" />

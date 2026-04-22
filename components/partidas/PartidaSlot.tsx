@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React from 'react';
-import { Image, Text, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native';
-import { Link, router } from 'expo-router';
+import { ActivityIndicator, Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 import { getTeamImage } from '../../constants/TeamAssets';
+import { useGameStore } from '../../core/store/useGameStore';
+import { useBorrarPartida } from '../../hooks/partidas/useBorrarPartida';
 import { Partida } from '../../types/partida';
 import { BASE_URL } from '../../utils/api';
-import { useBorrarPartida } from '../../hooks/partidas/useBorrarPartida';
 
 /**
  * Interface del componente.
@@ -22,17 +23,18 @@ interface GameSlotProps {
  */
 export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
     const { mutate: borrar, isPending: estaBorrando } = useBorrarPartida();
+    const setPartida = useGameStore((state) => state.setPartida);
 
     const confirmarBorrado = () => {
         if (!partida) return;
-        
+
         Alert.alert(
             "Eliminar Partida",
             `¿Estás seguro de que quieres borrar la carrera "${partida.nombre}"? Esta acción no se puede deshacer.`,
             [
                 { text: "Cancelar", style: "cancel" },
-                { 
-                    text: "Eliminar", 
+                {
+                    text: "Eliminar",
                     style: "destructive",
                     onPress: () => borrar(partida.id)
                 }
@@ -40,18 +42,27 @@ export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
         );
     };
 
+    const cargarPartida = (partida: Partida) => {
+        setPartida(partida);
+        router.push({
+            pathname: "/(partidas)/[id]/carrera",
+            params: { id: partida.id }
+        });
+    };
+
+
+
     if (!partida) {
         return (
-            <Link href="/nueva-partida" asChild>
-                <TouchableOpacity 
-                    className="bg-[#0c0c0c] border-dashed border-2 border-[#222] justify-center items-center py-8 rounded-2xl mb-4" 
-                    activeOpacity={0.7}
-                >
-                    <Ionicons name="add-circle-outline" size={32} color="#444" className="mb-2" />
-                    <Text className="text-[#444] text-xs font-black tracking-[2px] mb-1">RANURA {slotNumber}</Text>
-                    <Text className="text-[#E10600] text-sm font-bold uppercase">Iniciar Nueva Carrera</Text>
-                </TouchableOpacity>
-            </Link>
+            <TouchableOpacity
+                className="bg-[#0c0c0c] border-dashed border-2 border-[#222] justify-center items-center py-8 rounded-2xl mb-4"
+                activeOpacity={0.7}
+                onPress={() => router.push("/nueva-partida")}
+            >
+                <Ionicons name="add-circle-outline" size={32} color="#444" className="mb-2" />
+                <Text className="text-[#444] text-xs font-black tracking-[2px] mb-1">RANURA {slotNumber}</Text>
+                <Text className="text-[#E10600] text-sm font-bold uppercase">Iniciar Nueva Carrera</Text>
+            </TouchableOpacity>
         );
     }
 
@@ -66,15 +77,15 @@ export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
     });
 
     return (
-        <TouchableOpacity 
-            className={`bg-[#151515] rounded-2xl p-4 mb-4 border border-[#222] shadow-black/30 shadow-lg ${estaBorrando ? 'opacity-50' : ''}`} 
+        <TouchableOpacity
+            className={`bg-[#151515] rounded-2xl p-4 mb-4 border border-[#222] shadow-black/30 shadow-lg ${estaBorrando ? 'opacity-50' : ''}`}
             activeOpacity={0.8}
-            onLongPress={confirmarBorrado} // Opción de borrado rápido por long press
+            onPress={() => cargarPartida(partida)}
         >
             <View className="flex-row items-center">
                 <View className="w-16 h-16 bg-[#1e1e1e] rounded-xl justify-center items-center mr-4 border border-[#333] overflow-hidden">
                     {escuderia.imagenUrl ? (
-                        <Image 
+                        <Image
                             source={imageSource}
                             className="w-full h-full"
                             resizeMode="cover"
@@ -93,9 +104,9 @@ export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
                             <Text className="text-white text-[10px] font-bold">{partida.anio}</Text>
                         </View>
                     </View>
-                        
+
                     <Text className="text-[#AAAAAA] text-sm font-semibold mb-2">{escuderia.nombre}</Text>
-                    
+
                     <View className="flex-row items-center">
                         <View className="flex-row items-center mr-4">
                             <Ionicons name="wallet-outline" size={16} color="#4CD964" />
@@ -114,10 +125,10 @@ export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
                     <Ionicons name="calendar-outline" size={12} color="#555" className="mr-1" />
                     <Text className="text-[#555] text-[11px] font-semibold">Guardado: {parsedDate}</Text>
                 </View>
-                
+
                 <View className="flex-row items-center">
-                    <TouchableOpacity 
-                        onPress={confirmarBorrado} 
+                    <TouchableOpacity
+                        onPress={confirmarBorrado}
                         className="mr-3 p-1"
                         disabled={estaBorrando}
                     >
@@ -127,9 +138,9 @@ export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
                             <Ionicons name="trash-outline" size={18} color="#999" />
                         )}
                     </TouchableOpacity>
-                    <Ionicons name="chevron-forward" size={16} color="#E10600" />
                 </View>
             </View>
         </TouchableOpacity>
+
     );
 }

@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, Pressable, ActivityIndicator, Alert } from 'react-native';
 import { useRouter, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { ESCUDERIAS_DATA } from '../constants/EscuderiasData';
-import { getTeamImage } from '../constants/TeamAssets';
-import { Escuderia } from '../types/partida';
-import { useCrearPartida } from '../hooks/partidas/useCrearPartida';
+import { ESCUDERIAS_DATA } from '../../constants/EscuderiasData';
+import { getTeamImage } from '../../constants/TeamAssets';
+import { Escuderia } from '../../types/partida';
+import { useCrearPartida } from '../../hooks/partidas/useCrearPartida';
 
 /**
  * NuevaPartidaScreen

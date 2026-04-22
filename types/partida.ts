@@ -1,5 +1,5 @@
 /**
- * partida.ts (Modelo de Dominio)
+ * types/partida.ts (Modelo de Dominio)
  * 
  * Este es el modelo de datos que utiliza la aplicación en sus componentes y hooks.
  * Está desacoplado de la estructura exacta de la API gracias al uso de Mappers.
@@ -16,6 +16,16 @@ export interface Escuderia {
     tunel_viento: number;
     banco_pruebas: number;
     escuela_pilotos: number;
+}
+
+export interface Circuito {
+    id: number;
+    nombre: string;
+    pais: string;
+    tiempoBase: string;
+    numVueltas: number;
+    aerodinamicaReq: number;
+    motorReq: number;
 }
 
 export interface Partida {

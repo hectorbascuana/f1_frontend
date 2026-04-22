@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import PartidaSlot from '../components/partidas/PartidaSlot';
-import { usePartidas } from '../hooks/partidas/usePartidas';
+import PartidaSlot from '../../components/partidas/PartidaSlot';
+import { usePartidas } from '../../hooks/partidas/usePartidas';
 
 /**
  * Pantalla de Inicio (index.tsx)
