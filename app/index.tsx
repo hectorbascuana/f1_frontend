@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import PartidaSlot from '../components/partidas/PartidaSlot';
 import { usePartidas } from '../hooks/partidas/usePartidas';
 
@@ -8,37 +8,32 @@ import { usePartidas } from '../hooks/partidas/usePartidas';
  * 
  * Responsabilidad: Ser la primera pantalla que encuentra el jugador. 
  * Muestra el menú de selección de partidas (Modo Carrera).
- * 
- * Por petición para el TFG:
- * - Solamente se permiten 3 slots de juego a la vez. (Por eso forzamos iterar de 1 a 3).
- * - Utilizamos dark theme para maximar eficacia de batería.
- * - Usamos hooks separados para aislar lógica del front.
  */
 export default function MenuPartidasScreen() {
     // Extraemos la información del custom hook (Clean code)
     const { partidas, isLoading, error } = usePartidas();
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 bg-[#0a0a0a] pt-[50px]">
             {/* Header / Titulo Superior */}
-            <View style={styles.headerContainer}>
-                <Text style={styles.mainTitle}>F1 MANAGER</Text>
-                <Text style={styles.subTitle}>MODO CARRERA</Text>
+            <View className="items-center py-6 border-b border-[#222222] mb-4">
+                <Text className="text-white text-[28px] font-black tracking-[2px]">F1 MANAGER</Text>
+                <Text className="text-[#E10600] text-base font-bold tracking-[4px] mt-1">MODO CARRERA</Text>
             </View>
 
             {/* Contenedor principal de guardados */}
-            <ScrollView contentContainerStyle={styles.slotsContainer}>
+            <ScrollView contentContainerClassName="px-4 pb-6">
                 {isLoading ? (
                     // Spinner oscuro / corporativo para cargar datos
-                    <View style={styles.loaderContainer}>
+                    <View className="mt-[50px] items-center">
                         <ActivityIndicator size="large" color="#E10600" />
-                        <Text style={styles.loaderText}>Cargando datos de telemetría...</Text>
+                        <Text className="mt-4 text-[#AAAAAA] text-sm">Cargando datos de telemetría...</Text>
                     </View>
                 ) : error ? (
                     // Manejo de error si falla la conexión al server 8081
-                    <View style={styles.errorContainer}>
-                        <Text style={styles.errorText}>⚠️ ALERTA DE SISTEMA</Text>
-                        <Text style={styles.errorMessage}>{error}</Text>
+                    <View className="mt-10 bg-[#2A0808] border border-[#E10600] p-4 rounded-lg items-center">
+                        <Text className="text-[#E10600] font-bold text-base mb-2">⚠️ ALERTA DE SISTEMA</Text>
+                        <Text className="text-[#FFCCCC] text-center leading-5">{error}</Text>
                     </View>
                 ) : (
                     // Iteramos exactamente de 1 a 3 para mapear siempre los tres slots mandatorios
@@ -60,65 +55,3 @@ export default function MenuPartidasScreen() {
         </View>
     );
 }
-
-// Estilzado Oscuro y eficiente.
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#0a0a0a', // Oscuro absoluto de fondo
-        paddingTop: 50, // Pequeño espacio para la status bar en móviles
-    },
-    headerContainer: {
-        alignItems: 'center',
-        paddingVertical: 24,
-        borderBottomWidth: 1,
-        borderBottomColor: '#222222',
-        marginBottom: 16,
-    },
-    mainTitle: {
-        color: '#FFFFFF',
-        fontSize: 28,
-        fontWeight: '900',
-        letterSpacing: 2,
-    },
-    subTitle: {
-        color: '#E10600',
-        fontSize: 16,
-        fontWeight: 'bold',
-        letterSpacing: 4,
-        marginTop: 4,
-    },
-    slotsContainer: {
-        paddingHorizontal: 16,
-        paddingBottom: 24,
-    },
-    loaderContainer: {
-        marginTop: 50,
-        alignItems: 'center',
-    },
-    loaderText: {
-        marginTop: 16,
-        color: '#AAAAAA',
-        fontSize: 14,
-    },
-    errorContainer: {
-        marginTop: 40,
-        backgroundColor: '#2A0808',
-        borderColor: '#E10600',
-        borderWidth: 1,
-        padding: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    errorText: {
-        color: '#E10600',
-        fontWeight: 'bold',
-        fontSize: 16,
-        marginBottom: 8,
-    },
-    errorMessage: {
-        color: '#FFCCCC',
-        textAlign: 'center',
-        lineHeight: 20,
-    }
-});

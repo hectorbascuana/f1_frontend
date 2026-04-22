@@ -1,50 +1,26 @@
-import { useState, useEffect } from 'react';
-import { Partida } from '../../types/partida';
-import { api } from '../../utils/api';
+import { useQuery } from '@tanstack/react-query';
+import { partidas as getPartidas } from '@/core/api/partidas.action';
 
 /**
- * usePartidas (Hook central de gestión de datos)
+ * usePartidas
  * 
- * Este Custom Hook encapsula toda la interacción y estado relacionado con el recurso "Partida".
- * Cumpliendo los estándares de Clean Code, evitamos que la interfaz gráfica (UI) sepa CÓMO se consiguen 
- * los datos (Fetch vs Axios vs Async Storage), simplemente lo invoca y obtiene variables reactivas.
+ * Hook para gestionar la lista de partidas del usuario utilizando TanStack Query.
+ * Delegamos la gestión de estados (loading, error, data) y el almacenamiento en caché
+ * a la biblioteca, mejorando la eficiencia y limpieza del código.
  * 
- * Retorna:
- * - partidas: Array con la lista de partidas recibidas del backend.
- * - isLoading: Booleano para saber si estamos esperando la red (útil para spinners).
- * - error: Cadena de texto si hay error, permite notificar al usuario.
- * - reloadData: Función que nos permite forzar otra llamada para refrescar.
+ * @returns Un objeto con la información de la consulta de partidas.
  */
 export const usePartidas = () => {
-    const [partidas, setPartidas] = useState<Partida[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchPartidas = async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            // Se hace la petición asíncrona mediante axios GET
-            const response = await api.get<Partida[]>('api/partida');
-            setPartidas(response.data);
-        } catch (err) {
-            console.error("Error obteniendo partidas:", err);
-            setError("No se pudieron cargar las partidas. Revisa que el servidor en el puerto 8081 esté encendido.");
-        } finally {
-            // Independientemente de si falló o no, terminamos de cargar.
-            setIsLoading(false);
-        }
-    };
-
-    // Al montar el hook (cuando se carga la pantalla inicial), obtenemos las partidas automáticamente.
-    useEffect(() => {
-        fetchPartidas();
-    }, []);
+    const { data: partidas = [], isLoading, error } = useQuery({
+        queryKey: ['partidas'],
+        queryFn: getPartidas,
+        // Tiempo de frescura de los datos (1 día) para evitar re-peticiones constantes en el TFG
+        staleTime: 1000 * 60 * 60 * 24
+    });
 
     return {
         partidas,
         isLoading,
-        error,
-        reloadData: fetchPartidas
+        error: error ? error.message : null
     };
 };

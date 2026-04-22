@@ -1,124 +1,135 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, Text, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native';
+import { Link, router } from 'expo-router';
+import { getTeamImage } from '../../constants/TeamAssets';
 import { Partida } from '../../types/partida';
+import { BASE_URL } from '../../utils/api';
+import { useBorrarPartida } from '../../hooks/partidas/useBorrarPartida';
 
 /**
- * Interface del componente que acepta ya sea una partida para renderizar su información,
- * o "null" / undefined en caso de que este slot (hueco) esté vacío.
+ * Interface del componente.
  */
 interface GameSlotProps {
-    partida?: Partida; 
+    partida?: Partida;
     slotNumber: number;
 }
 
 /**
  * PartidaSlot Component
  * 
- * Responsabilidad: Renderizar gráficamente un único hueco de "Guardado de Partida".
- * Está construido sobre fondos oscuros usando la recomendación del TFG en sostenibilidad
- * para que genere muy bajo consumo lumínico/energético en la pantalla del usuario.
- * 
- * Si está vacío, ofrece la opción de crear una partida nueva.
+ * Responsabilidad: Renderizar un hueco de partida guardada.
  */
 export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
+    const { mutate: borrar, isPending: estaBorrando } = useBorrarPartida();
+
+    const confirmarBorrado = () => {
+        if (!partida) return;
+        
+        Alert.alert(
+            "Eliminar Partida",
+            `¿Estás seguro de que quieres borrar la carrera "${partida.nombre}"? Esta acción no se puede deshacer.`,
+            [
+                { text: "Cancelar", style: "cancel" },
+                { 
+                    text: "Eliminar", 
+                    style: "destructive",
+                    onPress: () => borrar(partida.id)
+                }
+            ]
+        );
+    };
+
     if (!partida) {
-        // Slot Vacío
         return (
-            <TouchableOpacity style={[styles.container, styles.emptyContainer]} activeOpacity={0.7}>
-                <Text style={styles.emptyTitle}>RANURA {slotNumber}</Text>
-                <Text style={styles.newGameText}>+ Iniciar Nueva Carrera</Text>
-            </TouchableOpacity>
+            <Link href="/nueva-partida" asChild>
+                <TouchableOpacity 
+                    className="bg-[#0c0c0c] border-dashed border-2 border-[#222] justify-center items-center py-8 rounded-2xl mb-4" 
+                    activeOpacity={0.7}
+                >
+                    <Ionicons name="add-circle-outline" size={32} color="#444" className="mb-2" />
+                    <Text className="text-[#444] text-xs font-black tracking-[2px] mb-1">RANURA {slotNumber}</Text>
+                    <Text className="text-[#E10600] text-sm font-bold uppercase">Iniciar Nueva Carrera</Text>
+                </TouchableOpacity>
+            </Link>
         );
     }
 
-    // Forma de parsear fecha "2026-04-16T14:51:22" a algo mas limpio, por ejemplo "16/4/2026"
-    const parsedDate = new Date(partida.fechaCreacion).toLocaleDateString();
+    const { escuderia } = partida;
+    const localImage = getTeamImage(escuderia.imagenUrl.replace(BASE_URL, ''));
+    const imageSource = localImage ? localImage : { uri: escuderia.imagenUrl };
+
+    const parsedDate = new Date(partida.fechaCreacion).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
 
     return (
-        <TouchableOpacity style={styles.container} activeOpacity={0.7}>
-            <View style={styles.header}>
-                <Text style={styles.title}>{partida.nombre}</Text>
-                <Text style={styles.yearText}>Temp. {partida.anio}</Text>
+        <TouchableOpacity 
+            className={`bg-[#151515] rounded-2xl p-4 mb-4 border border-[#222] shadow-black/30 shadow-lg ${estaBorrando ? 'opacity-50' : ''}`} 
+            activeOpacity={0.8}
+            onLongPress={confirmarBorrado} // Opción de borrado rápido por long press
+        >
+            <View className="flex-row items-center">
+                <View className="w-16 h-16 bg-[#1e1e1e] rounded-xl justify-center items-center mr-4 border border-[#333] overflow-hidden">
+                    {escuderia.imagenUrl ? (
+                        <Image 
+                            source={imageSource}
+                            className="w-full h-full"
+                            resizeMode="cover"
+                        />
+                    ) : (
+                        <Ionicons name="car-sport-outline" size={30} color="#555" />
+                    )}
+                </View>
+
+                <View className="flex-1">
+                    <View className="flex-row justify-between items-center mb-1">
+                        <Text className="text-white text-[17px] font-black flex-1 mr-2" numberOfLines={1}>
+                            {partida.nombre}
+                        </Text>
+                        <View className="bg-[#E10600] px-2 py-0.5 rounded">
+                            <Text className="text-white text-[10px] font-bold">{partida.anio}</Text>
+                        </View>
+                    </View>
+                        
+                    <Text className="text-[#AAAAAA] text-sm font-semibold mb-2">{escuderia.nombre}</Text>
+                    
+                    <View className="flex-row items-center">
+                        <View className="flex-row items-center mr-4">
+                            <Ionicons name="wallet-outline" size={16} color="#4CD964" />
+                            <Text className="text-emerald-400 text-xs font-bold ml-1">{escuderia.presupuesto} M €</Text>
+                        </View>
+                        <View className="flex-row items-center">
+                            <Ionicons name="flag-outline" size={16} color="#FFB800" />
+                            <Text className="text-amber-400 text-xs font-bold ml-1">{partida.proximoCircuito}/24</Text>
+                        </View>
+                    </View>
+                </View>
             </View>
-            <View style={styles.infoRow}>
-                <Text style={styles.infoText}>Escudería ID: {partida.idEscuderiaSeleccionada}</Text>
-                <Text style={styles.infoText}>Circuito ID: {partida.proximoCircuito}</Text>
-            </View>
-            <View style={styles.footer}>
-                <Text style={styles.dateText}>Creado: {parsedDate}</Text>
+
+            <View className="mt-3 pt-2 border-t border-[#222] flex-row justify-between items-center">
+                <View className="flex-row items-center">
+                    <Ionicons name="calendar-outline" size={12} color="#555" className="mr-1" />
+                    <Text className="text-[#555] text-[11px] font-semibold">Guardado: {parsedDate}</Text>
+                </View>
+                
+                <View className="flex-row items-center">
+                    <TouchableOpacity 
+                        onPress={confirmarBorrado} 
+                        className="mr-3 p-1"
+                        disabled={estaBorrando}
+                    >
+                        {estaBorrando ? (
+                            <ActivityIndicator size="small" color="#E10600" />
+                        ) : (
+                            <Ionicons name="trash-outline" size={18} color="#999" />
+                        )}
+                    </TouchableOpacity>
+                    <Ionicons name="chevron-forward" size={16} color="#E10600" />
+                </View>
             </View>
         </TouchableOpacity>
     );
 }
-
-// Estilos estrictamente orientados al Tema Oscuro (Dark Theme)
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#1E1E1E', // Gris super oscuro
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
-        borderLeftWidth: 4,
-        borderLeftColor: '#E10600', // Rojo "F1 Racing" para darle la temática pero eficientemente
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 5, // Android shadow
-    },
-    emptyContainer: {
-        borderLeftColor: '#444444', // Grisapagado para indicar inactivo
-        backgroundColor: '#121212',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 32,
-    },
-    emptyTitle: {
-        color: '#666666',
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    newGameText: {
-        color: '#E10600',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    title: {
-        color: '#FFFFFF',
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    yearText: {
-        color: '#FFB800', // Amarillo neumático
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    infoRow: {
-        flexDirection: 'column',
-        marginBottom: 12,
-    },
-    infoText: {
-        color: '#AAAAAA',
-        fontSize: 14,
-        marginBottom: 4,
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        borderTopWidth: 1,
-        borderTopColor: '#333333',
-        paddingTop: 8,
-    },
-    dateText: {
-        color: '#666666',
-        fontSize: 12,
-        fontStyle: 'italic',
-    }
-});

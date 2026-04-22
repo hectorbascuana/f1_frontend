@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 /**
  * api.ts
@@ -17,20 +17,23 @@ import Constants from 'expo-constants';
 
 const getInitialUrl = () => {
   const debuggerHost = Constants.expoConfig?.hostUri;
-  
+
   if (debuggerHost) {
-    // debuggerHost suele venir en formato "192.168.1.13:8081". Nos quedamos solo con la IP.
+    // debuggerHost suele venir en formato "192.168.1.13:8082". Nos quedamos solo con la IP.
     const ip = debuggerHost.split(':')[0];
     console.log("IP: ", ip);
-    return `http://${ip}:8081/`;
+    // Usamos el puerto 8081 para la API (el puerto 8082 es para Metro)
+    return `http://${ip}:8081/api/`;
   }
-  
-  // Fallback
-  return Platform.OS === 'android' ? 'http://10.0.2.2:8081/' : 'http://localhost:8081/';
+
+  // Fallback para emuladores
+  return Platform.OS === 'android' ? 'http://10.0.2.2:8081/api/' : 'http://localhost:8081/api/';
 };
 
+export const BASE_URL = getInitialUrl();
+
 export const api = axios.create({
-  baseURL: getInitialUrl(),
+  baseURL: BASE_URL,
   timeout: 5000, // Evitar colapsar la app si no hay conexión 
   headers: {
     'Content-Type': 'application/json',

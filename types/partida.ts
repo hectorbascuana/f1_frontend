@@ -1,22 +1,27 @@
 /**
- * Definición de la entidad Partida recibida de la API.
+ * partida.ts (Modelo de Dominio)
  * 
- * Se ha diseñado este tipo para que el Front-End tenga una estructura estricta y segura 
- * a la hora de manejar los datos de las partidas guardadas del F1 Manager.
- * 
- * Atributos:
- * - id: Identificador único de la partida.
- * - nombre: Nombre asignado por el jugador al guardado.
- * - idEscuderiaSeleccionada: El ID que referencia a la escudería elegida.
- * - proximoCircuito: Identificador del siguiente circuito a correr.
- * - fechaCreacion: String ISO de la fecha en la que se generó la partida.
- * - anio: El año virtual en el que transcurre el juego.
+ * Este es el modelo de datos que utiliza la aplicación en sus componentes y hooks.
+ * Está desacoplado de la estructura exacta de la API gracias al uso de Mappers.
  */
+
+export interface Escuderia {
+    id: number;
+    nombre: string;
+    imagenUrl: string; // URL completa o referencia local
+    presupuesto: number;
+    aerodinamica: number;
+    motor: number;
+    durabilidad: number;
+    tunel_viento: number;
+    banco_pruebas: number;
+    escuela_pilotos: number;
+}
 
 export interface Partida {
     id: number;
     nombre: string;
-    idEscuderiaSeleccionada: number;
+    escuderia: Escuderia;
     proximoCircuito: number;
     fechaCreacion: string;
     anio: number;
