@@ -69,11 +69,11 @@ export default function MejorasScreen() {
                     <Text className="text-[#555] text-[9px] font-black uppercase tracking-[2px]">Evolución del Coche</Text>
                 </View>
                 <View className="flex-row">
-                    <CarCard label="Aerodinámica" value={escuderia.aerodinamica} icon="airplane" color="#00D2FF" />
-                    <CarCard label="Potencia Motor" value={escuderia.motor} icon="flame" color="#FF1E1E" />
+                    <CarCard label="Aerodinámica" value={escuderia.aerodinamica} cost={escuderia.aerodinamicaCosto} presupuesto={escuderia.presupuesto} icon="airplane" color="#00D2FF" />
+                    <CarCard label="Potencia Motor" value={escuderia.motor} cost={escuderia.motorCosto} presupuesto={escuderia.presupuesto} icon="flame" color="#FF1E1E" />
                 </View>
                 <View className="flex-row">
-                    <CarCard label="Durabilidad" value={escuderia.durabilidad} icon="shield-checkmark" color="#4CD964" maxValue={20} />
+                    <CarCard label="Durabilidad" value={escuderia.durabilidad} cost={escuderia.durabilidadCosto} presupuesto={escuderia.presupuesto} icon="shield-checkmark" color="#4CD964" maxValue={20} />
                     <View className="flex-1 m-1" />
                 </View>
             </View>
@@ -84,15 +84,12 @@ export default function MejorasScreen() {
                     <View className="w-1 h-1 bg-amber-500 rounded-full mr-2" />
                     <Text className="text-[#555] text-[9px] font-black uppercase tracking-[2px]">Instalaciones HQ</Text>
                 </View>
-                <FacilityRow label="Túnel Viento" value={escuderia.tunelViento} icon="air" color="#FFD700" IconSet={MaterialIcons} />
-                <FacilityRow label="Banco Pruebas" value={escuderia.bancoPruebas} icon="speedometer-outline" color="#FF8C00" />
-                <FacilityRow label="Academia" value={escuderia.escuelaPilotos} icon="school" color="#A020F0" />
+                <FacilityRow label="Túnel Viento" value={escuderia.tunelViento} cost={escuderia.tunelVientoCosto} presupuesto={escuderia.presupuesto} icon="air" color="#FFD700" IconSet={MaterialIcons} />
+                <FacilityRow label="Banco Pruebas" value={escuderia.bancoPruebas} cost={escuderia.bancoPruebasCosto} presupuesto={escuderia.presupuesto} icon="speedometer-outline" color="#FF8C00" />
+                <FacilityRow label="Academia" value={escuderia.escuelaPilotos} cost={escuderia.escuelaPilotosCosto} presupuesto={escuderia.presupuesto} icon="school" color="#A020F0" />
             </View>
 
-            {/* Hint informativo discreto */}
-            <View className="mt-auto items-center pb-4">
-                <Text className="text-[#333] text-[8px] font-black uppercase tracking-[2px]">Desarrollo Técnico Oficial v1.0</Text>
-            </View>
+
         </View>
     );
 }

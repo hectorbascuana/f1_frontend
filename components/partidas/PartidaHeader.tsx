@@ -31,8 +31,8 @@ export default function PartidaHeader() {
         >
             <View className="flex-row items-center justify-between">
                 {/* Lado Izquierdo: Identidad de Escudería */}
-                <View className="flex-row items-center">
-                    <View className="w-12 h-12 bg-[#151515] rounded-xl border border-[#333] items-center justify-center overflow-hidden shadow-inner">
+                <View className="flex-row items-center flex-1 mr-3">
+                    <View className="w-11 h-11 bg-[#151515] rounded-xl border border-[#222] items-center justify-center overflow-hidden shadow-sm">
                         {escuderia.imagen ? (
                             <Image
                                 source={imageSource}
@@ -40,26 +40,36 @@ export default function PartidaHeader() {
                                 resizeMode="cover"
                             />
                         ) : (
-                            <Ionicons name="car-sport" size={24} color="#555" />
+                            <Ionicons name="car-sport" size={20} color="#555" />
                         )}
                     </View>
 
-                    <View className="ml-4">
-                        <Text className="text-[#555] text-[10px] font-black uppercase tracking-[2px]">Manager de</Text>
-                        <Text className="text-white text-xl font-black italic uppercase leading-tight tracking-[-0.5px]">
+                    <View className="ml-3 flex-1">
+                        <Text className="text-[#555] text-[9px] font-black uppercase tracking-[2px]">Escudería Oficial</Text>
+                        <Text 
+                            numberOfLines={1} 
+                            ellipsizeMode="tail"
+                            className="text-white text-lg font-black italic uppercase leading-tight tracking-[-0.5px]"
+                        >
                             {escuderia.nombre}
                         </Text>
                     </View>
                 </View>
 
-                {/* Lado Derecho: Estado Financiero (Aún más compacto) */}
-                <View className="items-end">
-                    <View className="bg-[#151515] border border-[#222] px-2.5 py-1 rounded-xl flex-row items-center shadow-lg">
-                        <View className="bg-emerald-500/10 p-1 rounded-lg mr-2">
+                {/* Lado Derecho: HUD Financiero Premium (Preparado para 8+ dígitos) */}
+                <View className="min-w-[110px]">
+                    <View className="bg-[#151515] border border-[#222] pl-2 pr-3 py-1.5 rounded-2xl flex-row items-center shadow-2xl">
+                        <View className="bg-emerald-500/15 p-1.5 rounded-xl mr-2.5 border border-emerald-500/20">
                             <Ionicons name="wallet" size={14} color="#10b981" />
                         </View>
                         <View>
-                            <Text className="text-emerald-400 font-black text-sm leading-tight">{escuderia.presupuesto}M €</Text>
+                            <Text className="text-[#444] text-[8px] font-black uppercase tracking-[1px] mb-0.5">Tesorería</Text>
+                            <Text 
+                                className="text-emerald-400 font-black text-sm tracking-[0.5px]"
+                                style={{ fontSize: escuderia.presupuesto > 9999 ? 12 : 14 }}
+                            >
+                                {escuderia.presupuesto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}M €
+                            </Text>
                         </View>
                     </View>
                 </View>
