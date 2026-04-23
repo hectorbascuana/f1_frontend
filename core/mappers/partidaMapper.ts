@@ -24,7 +24,7 @@ export const mapPartidaFromDTO = (partidaDTO: PartidaDTO): Partida => {
             nombre: partidaDTO.escuderiaSeleccionada.nombre,
             presupuesto: partidaDTO.escuderiaSeleccionada.presupuesto,
             // Reconstruimos la URL completa de la imagen
-            imagenUrl: partidaDTO.escuderiaSeleccionada.imagen
+            imagen: partidaDTO.escuderiaSeleccionada.imagen
         }
     };
 };

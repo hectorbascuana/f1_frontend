@@ -14,7 +14,7 @@ export interface Partida {
         id: number;
         nombre: string;
         presupuesto: number;
-        imagenUrl: string;
+        imagen: string;
     };
     proximoCircuito: number;
     fechaCreacion: string;

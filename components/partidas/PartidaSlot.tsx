@@ -66,8 +66,8 @@ export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
     }
 
     const { escuderia } = partida;
-    const localImage = getTeamImage(escuderia.imagenUrl.replace(BASE_URL, ''));
-    const imageSource = localImage ? localImage : { uri: escuderia.imagenUrl };
+    const localImage = getTeamImage(escuderia.imagen.replace(BASE_URL, ''));
+    const imageSource = localImage ? localImage : { uri: escuderia.imagen };
 
     const parsedDate = new Date(partida.fechaCreacion).toLocaleDateString('es-ES', {
         day: '2-digit',
@@ -83,7 +83,7 @@ export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
         >
             <View className="flex-row items-center">
                 <View className="w-16 h-16 bg-[#1e1e1e] rounded-xl justify-center items-center mr-4 border border-[#333] overflow-hidden">
-                    {escuderia.imagenUrl ? (
+                    {escuderia.imagen ? (
                         <Image
                             source={imageSource}
                             className="w-full h-full"

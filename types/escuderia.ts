@@ -1,12 +1,13 @@
 export interface Escuderia {
     id: number;
     nombre: string;
-    imagenUrl: string; // URL completa o referencia local
+    imagen: string; // URL o referencia local
     presupuesto: number;
     aerodinamica: number;
     motor: number;
     durabilidad: number;
-    tunel_viento: number;
-    banco_pruebas: number;
-    escuela_pilotos: number;
+    tunelViento: number;
+    bancoPruebas: number;
+    escuelaPilotos: number;
+    imagenUrl?: string; // Mantener opcional para compatibilidad temporal
 }

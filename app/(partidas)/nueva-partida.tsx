@@ -98,7 +98,7 @@ export default function NuevaPartidaScreen() {
                             }`}
                         >
                             <Image 
-                                source={getTeamImage(item.imagenUrl)}
+                                source={getTeamImage(item.imagen)}
                                 className="w-full h-full"
                                 resizeMode="cover"
                             />
@@ -120,7 +120,7 @@ export default function NuevaPartidaScreen() {
                     <View className="flex-row items-center mb-6">
                         <View className="w-20 h-20 bg-black rounded-2xl mr-4 items-center justify-center border border-[#333] overflow-hidden">
                             <Image 
-                                source={getTeamImage(escuderiaSeleccionada.imagenUrl)}
+                                source={getTeamImage(escuderiaSeleccionada.imagen)}
                                 className="w-full h-full"
                                 resizeMode="cover"
                             />
@@ -166,15 +166,15 @@ export default function NuevaPartidaScreen() {
                     <View className="flex-row justify-between">
                         <View className="items-center">
                             <Text className="text-[#AAA] text-[9px] mb-1">Túnel Viento</Text>
-                            {renderStatLevel(escuderiaSeleccionada.tunel_viento, 'bg-amber-400')}
+                            {renderStatLevel(escuderiaSeleccionada.tunelViento, 'bg-amber-400')}
                         </View>
                         <View className="items-center">
                             <Text className="text-[#AAA] text-[9px] mb-1">Banco Pruebas</Text>
-                            {renderStatLevel(escuderiaSeleccionada.banco_pruebas, 'bg-emerald-400')}
+                            {renderStatLevel(escuderiaSeleccionada.bancoPruebas, 'bg-emerald-400')}
                         </View>
                         <View className="items-center">
                             <Text className="text-[#AAA] text-[9px] mb-1">Escuela Pilotos</Text>
-                            {renderStatLevel(escuderiaSeleccionada.escuela_pilotos, 'bg-indigo-400')}
+                            {renderStatLevel(escuderiaSeleccionada.escuelaPilotos, 'bg-indigo-400')}
                         </View>
                     </View>
                 </View>
