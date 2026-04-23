@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, Link } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 import { getTeamImage } from '../../constants/TeamAssets';
@@ -50,19 +50,18 @@ export default function PartidaSlot({ partida, slotNumber }: GameSlotProps) {
         });
     };
 
-
-
     if (!partida) {
         return (
-            <TouchableOpacity
-                className="bg-[#0c0c0c] border-dashed border-2 border-[#222] justify-center items-center py-8 rounded-2xl mb-4"
-                activeOpacity={0.7}
-                onPress={() => router.push("/nueva-partida")}
-            >
-                <Ionicons name="add-circle-outline" size={32} color="#444" className="mb-2" />
-                <Text className="text-[#444] text-xs font-black tracking-[2px] mb-1">RANURA {slotNumber}</Text>
-                <Text className="text-[#E10600] text-sm font-bold uppercase">Iniciar Nueva Carrera</Text>
-            </TouchableOpacity>
+            <Link href="/nueva-partida" asChild>
+                <TouchableOpacity
+                    className="bg-[#0c0c0c] border-dashed border-2 border-[#222] justify-center items-center py-8 rounded-2xl mb-4"
+                    activeOpacity={0.7}
+                >
+                    <Ionicons name="add-circle-outline" size={32} color="#444" className="mb-2" />
+                    <Text className="text-[#444] text-xs font-black tracking-[2px] mb-1">RANURA {slotNumber}</Text>
+                    <Text className="text-[#E10600] text-sm font-bold uppercase">Iniciar Nueva Carrera</Text>
+                </TouchableOpacity>
+            </Link>
         );
     }
 

@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { BASE_URL } from '../../utils/api';
 import { Partida } from '../../types/partida';
+import { api } from '@/utils/api';
+import { PartidaDTO } from '@/core/types/partidaDTO';
+import { mapPartidaFromDTO } from '@/core/mappers/partidaMapper';
 
 /**
  * Hook usePartida
@@ -16,8 +17,8 @@ export const usePartida = (identity: string | string[] | undefined) => {
         queryKey: ['partida', identity],
         queryFn: async () => {
             if (!identity) throw new Error('ID de partida no proporcionado');
-            const response = await axios.get(`${BASE_URL}/api/partidas/${identity}`);
-            return response.data;
+            const { data } = await api.get<PartidaDTO>(`partida/${identity}`);
+            return mapPartidaFromDTO(data);
         },
         enabled: !!identity,
     });

@@ -21,7 +21,7 @@ interface GameState {
  * Store de Zustand para gestionar la partida seleccionada.
  * Evita peticiones redundantes a la API y centraliza la información del equipo y progreso.
  * 
- * Beneficio TFG: Mejora la eficiencia energética al reducir el tráfico de red y 
+ * Beneficio: Mejora la eficiencia de la aplicación al reducir el tráfico de red y 
  * el procesamiento de datos en cada cambio de pantalla.
  */
 export const useGameStore = create<GameState>((set) => ({

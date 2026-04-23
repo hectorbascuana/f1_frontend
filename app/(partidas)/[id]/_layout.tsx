@@ -21,14 +21,13 @@ export default function PartidaLayout() {
           tabBarStyle: {
             backgroundColor: '#0c0c0c',
             borderTopColor: '#222',
-            height: 65,
-            paddingBottom: 10,
             paddingTop: 5,
           },
           tabBarLabelStyle: {
             fontSize: 10,
             fontWeight: 'bold',
             textTransform: 'uppercase',
+            marginBottom: 5,
           },
           headerStyle: {
               backgroundColor: '#0a0a0a',

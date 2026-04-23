@@ -4,7 +4,7 @@ import { useRouter, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ESCUDERIAS_DATA } from '../../constants/EscuderiasData';
 import { getTeamImage } from '../../constants/TeamAssets';
-import { Escuderia } from '../../types/partida';
+import { Escuderia } from '../../types/escuderia';
 import { useCrearPartida } from '../../hooks/partidas/useCrearPartida';
 
 /**
@@ -18,18 +18,23 @@ export default function NuevaPartidaScreen() {
     const [escuderiaSeleccionada, setEscuderiaSeleccionada] = useState<Escuderia>(ESCUDERIAS_DATA[0]);
 
     // Integración del hook de mutación
-    const { mutate, isPending } = useCrearPartida();
-
+    const { mutateAsync, isPending } = useCrearPartida();
+ 
     // Lógica para deshabilitar el botón de envío
     const isFormInvalid = nombrePartida.trim().length < 3 || !escuderiaSeleccionada;
-
-    const handleCrearPartida = () => {
+ 
+    const handleCrearPartida = async () => {
         if (isFormInvalid) return;
-
-        mutate({
-            nombre: nombrePartida,
-            escuderiaId: escuderiaSeleccionada.id
-        });
+ 
+        try {
+            await mutateAsync({
+                nombre: nombrePartida,
+                escuderiaId: escuderiaSeleccionada.id
+            });
+        } catch (error) {
+            // El error ya se maneja en el hook, pero aquí evitamos que el flujo continúe
+            Alert.alert("Error", "No se pudo crear la partida.");
+        }
     };
 
     // Función para renderizar los niveles de una estadística (1 a 5)

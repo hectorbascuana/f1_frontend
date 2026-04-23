@@ -1,6 +1,6 @@
-import { PartidaDTO } from '../types/partidaDTO';
-import { Partida, Escuderia } from '../../types/partida';
+import { Partida } from '../../types/partida';
 import { BASE_URL } from '../../utils/api';
+import { PartidaDTO } from '../types/partidaDTO';
 
 /**
  * partidaMapper.ts
@@ -12,23 +12,23 @@ import { BASE_URL } from '../../utils/api';
  * solo tengamos que cambiarlo aquí y no en toda la aplicación.
  */
 
-export const mapPartidaFromDTO = (dto: PartidaDTO): Partida => {
+export const mapPartidaFromDTO = (partidaDTO: PartidaDTO): Partida => {
     return {
-        id: dto.id,
-        nombre: dto.nombre,
-        anio: dto.anio,
-        proximoCircuito: dto.proximoCircuito,
-        fechaCreacion: dto.fechaCreacion,
+        id: partidaDTO.id,
+        nombre: partidaDTO.nombre,
+        anio: partidaDTO.anio,
+        proximoCircuito: partidaDTO.proximoCircuito,
+        fechaCreacion: partidaDTO.fechaCreacion,
         escuderia: {
-            id: dto.escuderiaSeleccionada.id,
-            nombre: dto.escuderiaSeleccionada.nombre,
-            presupuesto: dto.escuderiaSeleccionada.presupuesto,
+            id: partidaDTO.escuderiaSeleccionada.id,
+            nombre: partidaDTO.escuderiaSeleccionada.nombre,
+            presupuesto: partidaDTO.escuderiaSeleccionada.presupuesto,
             // Reconstruimos la URL completa de la imagen
-            imagenUrl: `${BASE_URL}${dto.escuderiaSeleccionada.imagen}`
+            imagenUrl: partidaDTO.escuderiaSeleccionada.imagen
         }
     };
 };
 
-export const mapPartidasFromDTOList = (dtos: PartidaDTO[]): Partida[] => {
-    return dtos.map(mapPartidaFromDTO);
+export const mapPartidasFromDTOList = (partidasDTO: PartidaDTO[]): Partida[] => {
+    return partidasDTO.map(mapPartidaFromDTO);
 };

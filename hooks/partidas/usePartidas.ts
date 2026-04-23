@@ -14,7 +14,7 @@ export const usePartidas = () => {
     const { data: partidas = [], isLoading, error } = useQuery({
         queryKey: ['partidas'],
         queryFn: getPartidas,
-        // Tiempo de frescura de los datos (1 día) para evitar re-peticiones constantes en el TFG
+        // Tiempo de frescura de los datos (1 día) para evitar re-peticiones constantes
         staleTime: 1000 * 60 * 60 * 24
     });
 

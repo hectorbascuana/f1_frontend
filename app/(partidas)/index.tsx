@@ -1,6 +1,8 @@
-import React from 'react';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import PartidaSlot from '../../components/partidas/PartidaSlot';
+import { useGameStore } from '../../core/store/useGameStore';
 import { usePartidas } from '../../hooks/partidas/usePartidas';
 
 /**
@@ -12,6 +14,21 @@ import { usePartidas } from '../../hooks/partidas/usePartidas';
 export default function MenuPartidasScreen() {
     // Extraemos la información del custom hook (Clean code)
     const { partidas, isLoading, error } = usePartidas();
+    const limpiarPartida = useGameStore((state) => state.limpiarPartida);
+
+    /**
+     * EFECTO DE LIMPIEZA
+     * Usamos useFocusEffect para que cada vez que el usuario llegue a esta pantalla 
+     * (incluso volviendo atrás con el dedo), se resetee la partida activa en el Store.
+     * Esto garantiza que no haya rastro de partidas anteriores al abrir una nueva.
+     */
+    useFocusEffect(
+        useCallback(() => {
+            limpiarPartida();
+        }, [])
+    );
+
+    
 
     return (
         <View className="flex-1 bg-[#0a0a0a] pt-[50px]">

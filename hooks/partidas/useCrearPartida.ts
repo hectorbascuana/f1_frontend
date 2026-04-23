@@ -1,28 +1,33 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { crearPartida } from '../../core/api/partidas.action';
 import { router } from 'expo-router';
+import { useGameStore } from '../../core/store/useGameStore';
 
 /**
  * useCrearPartida
  * 
  * Hook que gestiona la mutación para crear una nueva partida.
- * Utiliza TanStack Query para controlar el estado de la petición (loading, success, error)
- * e invalida la caché de partidas previas para asegurar que el menú principal se actualice.
  */
 export const useCrearPartida = () => {
     const queryClient = useQueryClient();
+    const setPartida = useGameStore((state) => state.setPartida);
 
     return useMutation({
         mutationFn: ({ nombre, escuderiaId }: { nombre: string; escuderiaId: number }) => 
             crearPartida(nombre, escuderiaId),
         
         onSuccess: (data) => {
-            // Invalidamos la consulta de partidas para que se refresque la lista en el index
+            // Invalidamos la consulta de partidas para que el caché esté fresco
             queryClient.invalidateQueries({ queryKey: ['partidas'] });
             
-            // Opcionalmente, podríamos navegar a la pantalla de la partida recién creada
-            // No obstante, por ahora volvemos al menú principal para ver el nuevo slot ocupado
-            router.replace('/');
+            // Guardamos la partida completa en el Store inmediatamente
+            setPartida(data);
+
+            // Navegamos directamente al interior de la partida
+            router.replace({
+                pathname: "/(partidas)/[id]/carrera",
+                params: { id: data.id }
+            });
         },
         onError: (error) => {
             console.error('Error en la mutación de creación:', error);

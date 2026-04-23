@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useActiveGame } from '../../hooks/partidas/useActiveGame';
 import { getTeamImage } from '../../constants/TeamAssets';
 import { BASE_URL } from '../../utils/api';
@@ -14,16 +15,20 @@ import { BASE_URL } from '../../utils/api';
  * Estilo: Dark Premium con acento en F1 Red.
  */
 export default function PartidaHeader() {
+  const insets = useSafeAreaInsets();
   const { partida, isLoading } = useActiveGame();
 
   if (isLoading || !partida) return null;
 
   const { escuderia } = partida;
-  const localImage = getTeamImage(escuderia.imagenUrl.replace(BASE_URL, ''));
+  const localImage = escuderia.imagenUrl ? getTeamImage(escuderia.imagenUrl.replace(BASE_URL, '')) : null;
   const imageSource = localImage ? localImage : { uri: escuderia.imagenUrl };
 
   return (
-    <View className="bg-[#0c0c0c] pt-20 pb-7 px-6 border-b border-[#222] shadow-xl shadow-black/50">
+    <View 
+        style={{ paddingTop: Math.max(insets.top, 20) }}
+        className="bg-[#0c0c0c] pb-7 px-6 border-b border-[#222] shadow-xl shadow-black/50"
+    >
       <View className="flex-row items-center justify-between">
         {/* Lado Izquierdo: Identidad de Escudería */}
         <View className="flex-row items-center">
@@ -32,7 +37,7 @@ export default function PartidaHeader() {
                     <Image 
                         source={imageSource} 
                         className="w-full h-full" 
-                        resizeMode="contain" 
+                        resizeMode="cover" 
                     />
                 ) : (
                     <Ionicons name="car-sport" size={24} color="#555" />

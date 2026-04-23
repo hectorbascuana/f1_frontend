@@ -1,4 +1,4 @@
-import { Escuderia } from '../types/partida';
+import { Escuderia } from '../types/escuderia';
 
 /**
  * ESCUDERIAS_DATA

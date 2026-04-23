@@ -5,33 +5,17 @@
  * Está desacoplado de la estructura exacta de la API gracias al uso de Mappers.
  */
 
-export interface Escuderia {
-    id: number;
-    nombre: string;
-    imagenUrl: string; // URL completa o referencia local
-    presupuesto: number;
-    aerodinamica: number;
-    motor: number;
-    durabilidad: number;
-    tunel_viento: number;
-    banco_pruebas: number;
-    escuela_pilotos: number;
-}
 
-export interface Circuito {
-    id: number;
-    nombre: string;
-    pais: string;
-    tiempoBase: string;
-    numVueltas: number;
-    aerodinamicaReq: number;
-    motorReq: number;
-}
 
 export interface Partida {
     id: number;
     nombre: string;
-    escuderia: Escuderia;
+    escuderia: {
+        id: number;
+        nombre: string;
+        presupuesto: number;
+        imagenUrl: string;
+    };
     proximoCircuito: number;
     fechaCreacion: string;
     anio: number;
