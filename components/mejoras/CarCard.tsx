@@ -32,7 +32,7 @@ const CarCard = ({ label, value, icon, color, cost, presupuesto, maxValue = 100,
                     className={`bg-[#151515] border ${canAfford ? 'border-[#222]' : 'border-red-900/30'} py-2 rounded-xl items-center flex-row justify-center shadow-sm ${!canAfford ? 'opacity-60' : ''}`}
                 >
                     <View className={`${canAfford ? 'bg-emerald-500/10' : 'bg-red-500/10'} p-0.5 rounded-md mr-2`}>
-                        <Ionicons name="wallet" size={10} color={canAfford ? "#10b981" : "#ef4444"} />
+                        <Ionicons name="pricetag-outline" size={10} color={canAfford ? "#10b981" : "#ef4444"} />
                     </View>
                     <Text className={`${canAfford ? 'text-emerald-400' : 'text-red-500'} font-black text-[9px] uppercase tracking-[0.5px]`}>
                         {cost.toLocaleString('es-ES', { minimumFractionDigits: 1 })}M €

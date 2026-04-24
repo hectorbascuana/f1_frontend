@@ -17,6 +17,18 @@ export const escuderia = async (id: number): Promise<Escuderia> => {
 };
 
 /**
+ * Alínea un piloto en un asiento específico de la escudería.
+ */
+export const alinearPiloto = async (escuderiaId: number, pilotoId: number | null, asiento: number): Promise<Escuderia> => {
+    const response = await api.put<Escuderia>('escuderias/alineacion', {
+        escuderiaId,
+        pilotoId,
+        asiento
+    });
+    return response.data;
+};
+
+/**
  * Realiza una mejora en la escudería (coche o instalaciones).
  * @param {MejoraRequest} request - Datos de la mejora (ID escudería y tipo).
  * @returns {Promise<MejoraResponse>} Datos actualizados tras la mejora.

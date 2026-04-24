@@ -1,25 +1,210 @@
-
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Text, View } from 'react-native';
-
+import { ActivityIndicator, ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import { useActiveGame } from '../../../../hooks/store/useActiveGame';
+import { usePilotosEscuderia } from '../../../../hooks/pilotos/usePilotosEscuderia';
+import DriverCard from '../../../../components/pilotos/DriverCard';
+import OffersModal from '../../../../components/pilotos/OffersModal';
+import TransferModal from '../../../../components/pilotos/TransferModal';
+import AlineacionModal from '../../../../components/pilotos/AlineacionModal';
+import { useAlinearPiloto } from '../../../../hooks/pilotos/useAlinearPiloto';
+import { Piloto } from '@/types/piloto';
 
+/**
+ * PilotosScreen
+ * 
+ * Pantalla que muestra el plantel actual de pilotos de la escudería del jugador.
+ */
 export default function PilotosScreen() {
-  const { partida, isLoading } = useActiveGame();
+    const { partida, isLoading: loadingGame, error: errorGame } = useActiveGame();
+    const { mutate: alinear, isPending: alignPending } = useAlinearPiloto();
+    const [selectedPiloto, setSelectedPiloto] = React.useState<Piloto | null>(null);
+    const [modalOffersVisible, setModalOffersVisible] = React.useState(false);
+    const [modalTransferVisible, setModalTransferVisible] = React.useState(false);
+    
+    // Estados para Alineación
+    const [modalAlineacionVisible, setModalAlineacionVisible] = React.useState(false);
+    const [selectedAsiento, setSelectedAsiento] = React.useState<number>(1);
+    
+    // Obtenemos los pilotos de nuestra escudería
+    const escuderiaId = partida?.escuderia?.id;
+    const { 
+        data: pilotos, 
+        isLoading: loadingPilotos, 
+        error: errorPilotos,
+        refetch
+    } = usePilotosEscuderia(escuderiaId || 0);
 
-  return (
-    <View className='flex-1 bg-[#0a0a0a] justify-center items-center p-10'>
-      <View className="bg-[#151515] p-8 rounded-full mb-6 border border-[#222]">
-        <Ionicons name="people-outline" size={60} color="#E10600" />
-      </View>
-      <Text className='text-white font-black italic text-2xl uppercase'>Pilotos: {partida?.escuderia.nombre || '...'}</Text>
-      <Text className='text-[#555] italic uppercase text-[10px] tracking-[2px] mt-2 text-center'>
-        Gestiona tus contratos y revisa el rendimiento de tus pilotos actuales.
-      </Text>
-      <View className="mt-10 bg-[#151515] px-6 py-3 rounded-xl border border-dashed border-[#333]">
-        <Text className='text-[#E10600] font-bold text-xs uppercase tracking-[1px]'>Módulo en fase de desarrollo</Text>
-      </View>
-    </View>
-  );
+    // Estado de carga unificado
+    if (loadingGame || (loadingPilotos && !!escuderiaId)) {
+        return (
+            <View className="flex-1 bg-[#0a0a0a] justify-center items-center">
+                <ActivityIndicator size="large" color="#E10600" />
+                <Text className="text-[#AAAAAA] mt-4 font-bold tracking-[2px] text-xs uppercase">Sincronizando Plantel...</Text>
+            </View>
+        );
+    }
+
+    // Estado de error
+    if (errorGame || errorPilotos || (!pilotos && !loadingPilotos && !!escuderiaId)) {
+        return (
+            <View className="flex-1 bg-[#0a0a0a] justify-center items-center px-10">
+                <Ionicons name="alert-circle-outline" size={48} color="#E10600" />
+                <Text className="text-white text-center font-black mt-4 uppercase italic">Error de Datos</Text>
+                <Text className="text-[#555] text-center text-xs mt-2">No se ha podido recuperar la información oficial de los pilotos.</Text>
+                <TouchableOpacity
+                    onPress={() => refetch()}
+                    className="mt-6 bg-[#151515] border border-[#222] px-6 py-3 rounded-xl"
+                >
+                    <Text className="text-white font-bold uppercase text-[10px]">Reintentar</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    return (
+        <ScrollView 
+            className='flex-1 bg-[#0a0a0a]' 
+            contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 25 }}
+            showsVerticalScrollIndicator={false}
+        >
+            {/* Cabecera de la Sección con Acción de Mercado */}
+            <View className="mb-8 flex-row justify-between items-start px-1">
+                <View className="flex-1">
+                    <Text className="text-[#E10600] text-[10px] font-black uppercase tracking-[4px] mb-1">Squadra Oficial</Text>
+                    <Text className="text-white text-2xl font-black italic uppercase tracking-[-1px]">GESTIÓN DE PILOTOS</Text>
+                    <View className="h-0.5 w-10 bg-[#E10600] mt-3" />
+                </View>
+                
+                <TouchableOpacity 
+                    className="bg-[#151515] border border-[#222] p-3 rounded-2xl flex-row items-center shadow-sm active:opacity-70"
+                >
+                    <View className="bg-[#E10600]/10 p-2 rounded-xl mr-2">
+                        <Ionicons name="cart-outline" size={16} color="#E10600" />
+                    </View>
+                    <View>
+                        <Text className="text-[#555] text-[7px] font-black uppercase tracking-[1px]">Explorar</Text>
+                        <Text className="text-white text-[10px] font-black uppercase">MERCADO</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+
+            {/* Listado de Pilotos */}
+            {pilotos && pilotos.length > 0 ? (
+                <>
+                    {/* Pilotos Oficiales (Asiento 1 y 2) */}
+                    <View>
+                        <View className="flex-row items-center mb-4 px-1">
+                            <View className="bg-[#E10600] w-6 h-6 rounded-md items-center justify-center mr-3">
+                                <Text className="text-white font-black text-[10px] italic">1</Text>
+                            </View>
+                            <Text className="text-[#555] text-[10px] font-black uppercase tracking-[2px]">Primer Piloto</Text>
+                        </View>
+                        {(() => {
+                            const p1 = pilotos.find(p => p.asiento === 1);
+                            const p1Mock = p1 ? { 
+                                ...p1, 
+                                ofertasPendientes: 2,
+                                ofertas: [
+                                    { id: 1, escuderiaId: 45, escuderiaNombre: 'Red Bull', escuderiaImagen: 'assets/images/teams/red-bull.png', monto: 65.5 },
+                                    { id: 2, escuderiaId: 48, escuderiaNombre: 'McLaren', escuderiaImagen: 'assets/images/teams/mclaren.png', monto: 48.2 }
+                                ]
+                            } : null;
+
+                            return (
+                                <DriverCard 
+                                    piloto={p1Mock} 
+                                    emptyLabel="ASIENTO 1 VACÍO"
+                                    onPress={() => { setSelectedAsiento(1); setModalAlineacionVisible(true); }}
+                                    onPressEmpty={() => { setSelectedAsiento(1); setModalAlineacionVisible(true); }}
+                                    onPressOffers={() => { if(p1Mock) { setSelectedPiloto(p1Mock); setModalOffersVisible(true); }}} 
+                                    onPressTransfer={() => { if(p1Mock) { setSelectedPiloto(p1Mock); setModalTransferVisible(true); }}}
+                                />
+                            );
+                        })()}
+
+                        <View className="flex-row items-center mb-4 px-1 mt-2">
+                            <View className="bg-[#E10600] w-6 h-6 rounded-md items-center justify-center mr-3">
+                                <Text className="text-white font-black text-[10px] italic">2</Text>
+                            </View>
+                            <Text className="text-[#555] text-[10px] font-black uppercase tracking-[2px]">Segundo Piloto</Text>
+                        </View>
+                        {(() => {
+                            const p2 = pilotos.find(p => p.asiento === 2);
+                            return (
+                                <DriverCard 
+                                    piloto={p2 || null} 
+                                    emptyLabel="ASIENTO 2 VACÍO"
+                                    onPress={() => { setSelectedAsiento(2); setModalAlineacionVisible(true); }}
+                                    onPressEmpty={() => { setSelectedAsiento(2); setModalAlineacionVisible(true); }}
+                                    onPressOffers={() => {}} 
+                                    onPressTransfer={() => {}}
+                                />
+                            );
+                        })()}
+                    </View>
+
+                    {/* Sección de Reservas */}
+                    {pilotos.filter(p => p.asiento === null).length > 0 && (
+                        <View className="mt-8">
+                            <View className="flex-row items-center mb-6 px-1">
+                                <Ionicons name="layers-outline" size={16} color="#555" />
+                                <Text className="text-[#555] text-[10px] font-black uppercase tracking-[2px] ml-3">Pilotos de Reserva</Text>
+                                <View className="flex-1 h-[1px] bg-[#222] ml-4" />
+                            </View>
+                            
+                            {pilotos.filter(p => p.asiento === null).map((piloto) => (
+                                <DriverCard 
+                                    key={piloto.id} 
+                                    piloto={piloto} 
+                                    onPress={() => {
+                                        // Al pulsar un reserva, podríamos abrir su gestión o simplemente
+                                        // informar de que debe asignarse a un asiento arriba.
+                                    }}
+                                    onPressOffers={() => { setSelectedPiloto(piloto); setModalOffersVisible(true); }}
+                                    onPressTransfer={() => { setSelectedPiloto(piloto); setModalTransferVisible(true); }}
+                                />
+                            ))}
+                        </View>
+                    )}
+                </>
+            ) : (
+                <View className="py-20 items-center justify-center border border-dashed border-[#222] rounded-[32px]">
+                    <Ionicons name="person-add-outline" size={32} color="#333" />
+                    <Text className="text-[#555] mt-4 font-bold uppercase text-xs">No hay pilotos contratados</Text>
+                </View>
+            )}
+            
+            {/* Modal de Ofertas */}
+            <OffersModal 
+                visible={modalOffersVisible} 
+                onClose={() => setModalOffersVisible(false)} 
+                piloto={selectedPiloto}
+            />
+
+            {/* Modal de Transferencia */}
+            <TransferModal
+                visible={modalTransferVisible}
+                onClose={() => setModalTransferVisible(false)}
+                piloto={selectedPiloto}
+                onConfirm={(precio) => {
+                    console.log('Poner en venta por:', precio);
+                    setModalTransferVisible(false);
+                }}
+            />
+
+            {/* Modal de Alineación */}
+            <AlineacionModal
+                visible={modalAlineacionVisible}
+                onClose={() => setModalAlineacionVisible(false)}
+                asiento={selectedAsiento}
+                pilotos={pilotos || []}
+                pilotoActualId={pilotos?.find(p => p.asiento === selectedAsiento)?.id || null}
+                onSelect={(pilotoId) => {
+                    alinear({ escuderiaId: escuderiaId!, pilotoId, asiento: selectedAsiento });
+                    setModalAlineacionVisible(false);
+                }}
+            />
+        </ScrollView>
+    );
 }
