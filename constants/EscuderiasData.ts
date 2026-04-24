@@ -17,7 +17,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 12,
         tunelViento: 3,
         bancoPruebas: 2,
-        escuelaPilotos: 3
+        escuelaPilotos: 3,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 2,
@@ -29,7 +32,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 16,
         tunelViento: 3,
         bancoPruebas: 3,
-        escuelaPilotos: 2
+        escuelaPilotos: 2,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 3,
@@ -41,7 +47,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 14,
         tunelViento: 2,
         bancoPruebas: 3,
-        escuelaPilotos: 3
+        escuelaPilotos: 3,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 4,
@@ -53,7 +62,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 17,
         tunelViento: 3,
         bancoPruebas: 2,
-        escuelaPilotos: 2
+        escuelaPilotos: 2,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 5,
@@ -65,7 +77,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 13,
         tunelViento: 3,
         bancoPruebas: 2,
-        escuelaPilotos: 1
+        escuelaPilotos: 1,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 6,
@@ -77,7 +92,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 10,
         tunelViento: 2,
         bancoPruebas: 2,
-        escuelaPilotos: 3
+        escuelaPilotos: 3,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 7,
@@ -89,7 +107,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 15,
         tunelViento: 1,
         bancoPruebas: 2,
-        escuelaPilotos: 2
+        escuelaPilotos: 2,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 8,
@@ -101,7 +122,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 12,
         tunelViento: 2,
         bancoPruebas: 1,
-        escuelaPilotos: 3
+        escuelaPilotos: 3,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 9,
@@ -113,7 +137,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 11,
         tunelViento: 2,
         bancoPruebas: 3,
-        escuelaPilotos: 2
+        escuelaPilotos: 2,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 10,
@@ -125,7 +152,10 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 16,
         tunelViento: 1,
         bancoPruebas: 1,
-        escuelaPilotos: 1
+        escuelaPilotos: 1,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     },
     {
         id: 11,
@@ -137,6 +167,9 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         durabilidad: 9,
         tunelViento: 2,
         bancoPruebas: 2,
-        escuelaPilotos: 1
+        escuelaPilotos: 1,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
     }
 ];

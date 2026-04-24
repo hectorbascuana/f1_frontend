@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Text, TouchableOpacity, View } from "react-native";
 
 // Componente de Tarjeta Cuadrada para el Coche
-const CarCard = ({ label, value, icon, color, cost, presupuesto, maxValue = 100 }: any) => {
+const CarCard = ({ label, value, icon, color, cost, presupuesto, maxValue = 100, onPress }: any) => {
     const canAfford = presupuesto >= cost;
 
     return (
@@ -27,6 +27,7 @@ const CarCard = ({ label, value, icon, color, cost, presupuesto, maxValue = 100 
                     <View className="h-full rounded-full" style={{ width: `${(value / maxValue) * 100}%`, backgroundColor: color }} />
                 </View>
                 <TouchableOpacity 
+                    onPress={onPress}
                     disabled={!canAfford}
                     className={`bg-[#151515] border ${canAfford ? 'border-[#222]' : 'border-red-900/30'} py-2 rounded-xl items-center flex-row justify-center shadow-sm ${!canAfford ? 'opacity-60' : ''}`}
                 >

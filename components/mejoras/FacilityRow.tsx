@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Text, TouchableOpacity, View } from "react-native";
 
 // Componente de Fila Horizontal para Instalaciones
-const FacilityRow = ({ label, value, icon, color, cost, presupuesto, IconSet = Ionicons }: any) => {
+const FacilityRow = ({ label, value, icon, color, cost, presupuesto, IconSet = Ionicons, onPress }: any) => {
     const IconComponent = IconSet;
     const canAfford = presupuesto >= cost;
 
@@ -26,6 +26,7 @@ const FacilityRow = ({ label, value, icon, color, cost, presupuesto, IconSet = I
                 </View>
             </View>
             <TouchableOpacity
+                onPress={onPress}
                 disabled={!canAfford}
                 className={`bg-[#151515] border ${canAfford ? 'border-[#222]' : 'border-red-900/30'} px-3 py-2 rounded-xl items-center flex-row shadow-sm ml-4 ${!canAfford ? 'opacity-60' : ''}`}
             >
