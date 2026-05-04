@@ -14,10 +14,9 @@ export function useAlinearPiloto() {
             alinearPiloto(escuderiaId, pilotoId, asiento),
         
         onSuccess: (data) => {
-            // Invalidamos las consultas de pilotos y escudería para refrescar la UI
+            // Solo invalidamos pilotos, ya que es lo único que cambia al mover asientos.
+            // El presupuesto y datos de escudería permanecen intactos.
             queryClient.invalidateQueries({ queryKey: ['pilotos'] });
-            queryClient.invalidateQueries({ queryKey: ['escuderia'] });
-            queryClient.invalidateQueries({ queryKey: ['activeGame'] });
         },
         
         onError: (error: any) => {

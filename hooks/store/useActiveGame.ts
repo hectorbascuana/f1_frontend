@@ -25,11 +25,13 @@ export const useActiveGame = () => {
     const { data: serverPartida, isLoading, error } = usePartida(fetchId);
 
     useEffect(() => {
-        // Solo actualizamos el store si recibimos datos nuevos y válidos del servidor
-        if (serverPartida && (!partida || serverPartida.id !== partida.id)) {
+        // Actualizamos el store si recibimos datos frescos del servidor.
+        // Comparamos el presupuesto o simplemente el objeto completo para asegurar sincronización 
+        // de datos internos (asientos, dinero, etc) incluso si el ID es el mismo.
+        if (serverPartida && JSON.stringify(serverPartida) !== JSON.stringify(partida)) {
             setPartida(serverPartida);
         }
-    }, [serverPartida, partida, setPartida]);
+    }, [serverPartida, setPartida]);
 
     return {
         // Si urlId es el correcto, usamos lo del store. Si no, lo que venga del server.

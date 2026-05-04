@@ -66,3 +66,4 @@ export const borrarPartida = async (id: number): Promise<{ mensaje: string; stat
         throw new Error('No se ha podido eliminar la partida. Inténtalo de nuevo.');
     }
 };
+

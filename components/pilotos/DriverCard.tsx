@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Image, Text, View, Dimensions, TouchableOpacity } from "react-native";
+import { Image, Text, View, Dimensions, Pressable } from "react-native";
 import { Piloto } from "@/types/piloto";
 import { BASE_URL } from "@/utils/api";
 import { getDriverImage } from "@/constants/DriverAssets";
@@ -46,17 +46,16 @@ export default function DriverCard({
     // Si no hay piloto, renderizamos un estado vacío premium
     if (!piloto) {
         return (
-            <TouchableOpacity 
+            <Pressable 
                 onPress={onPressEmpty}
-                activeOpacity={0.8}
-                className="bg-[#121212] border border-[#222] border-dashed rounded-[32px] mb-6 overflow-hidden h-40 items-center justify-center"
+                className="bg-[#121212] border border-[#222] border-dashed rounded-[32px] mb-6 overflow-hidden h-40 items-center justify-center active:opacity-80"
             >
                 <View className="bg-[#1a1a1a] w-16 h-16 rounded-full items-center justify-center border border-[#333] mb-3">
                     <Ionicons name="person-add-outline" size={32} color="#444" />
                 </View>
                 <Text className="text-[#444] font-black italic uppercase tracking-[1px]">{emptyLabel}</Text>
                 <Text className="text-[#333] text-[10px] uppercase font-bold mt-1">Pulsa para asignar un piloto</Text>
-            </TouchableOpacity>
+            </Pressable>
         );
     }
 
@@ -64,10 +63,9 @@ export default function DriverCard({
     const imageSource = getDriverImage(normalizedPath);
 
     return (
-        <TouchableOpacity 
+        <Pressable 
             onPress={onPress}
-            activeOpacity={onPress ? 0.7 : 1}
-            className="bg-[#121212] border border-[#222] rounded-[32px] mb-6 overflow-hidden shadow-2xl shadow-black"
+            className="bg-[#121212] border border-[#222] rounded-[32px] mb-6 overflow-hidden shadow-2xl shadow-black active:opacity-70"
         >
             {/* Cabecera de la Tarjeta con Imagen y Datos Básicos */}
             <View className="flex-row p-5">
@@ -116,19 +114,19 @@ export default function DriverCard({
 
                         {/* Botón de Mercado (Prueba Visual) */}
                         {piloto.ofertasPendientes && piloto.ofertasPendientes > 0 ? (
-                            <TouchableOpacity 
+                            <Pressable 
                                 onPress={onPressOffers}
-                                className="bg-amber-500/20 border border-amber-500/40 px-3 py-1.5 rounded-lg flex-row items-center"
+                                className="bg-amber-500/20 border border-amber-500/40 px-3 py-1.5 rounded-lg flex-row items-center active:opacity-70"
                             >
                                 <View className="w-1.5 h-1.5 bg-amber-500 rounded-full mr-2 animate-pulse" />
                                 <Text className="text-amber-500 font-black text-[8px] uppercase tracking-[0.5px]">
                                     {piloto.ofertasPendientes} OFERTAS
                                 </Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         ) : (
-                            <TouchableOpacity 
+                            <Pressable 
                                 onPress={onPressTransfer}
-                                className={`px-3 py-1.5 rounded-lg border flex-row items-center ${piloto.enTransferible ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-[#1a1a1a] border-[#222]'}`}
+                                className={`px-3 py-1.5 rounded-lg border flex-row items-center active:opacity-70 ${piloto.enTransferible ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-[#1a1a1a] border-[#222]'}`}
                             >
                                 <Ionicons 
                                     name={piloto.enTransferible ? "megaphone" : "add-circle-outline"} 
@@ -138,7 +136,7 @@ export default function DriverCard({
                                 <Text className={`${piloto.enTransferible ? 'text-indigo-400' : 'text-[#555]'} font-black text-[8px] uppercase tracking-[0.5px] ml-1.5`}>
                                     {piloto.enTransferible ? 'TRANSFERIBLE' : 'PONER EN VENTA'}
                                 </Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         )}
                     </View>
                 </View>
@@ -172,6 +170,6 @@ export default function DriverCard({
                     </Text>
                 </View>
             )}
-        </TouchableOpacity>
+        </Pressable>
     );
 }

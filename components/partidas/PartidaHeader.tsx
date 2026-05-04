@@ -4,6 +4,7 @@ import { Image, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getTeamImage } from '../../constants/TeamAssets';
 import { useActiveGame } from '../../hooks/store/useActiveGame';
+import { useEscuderia } from '../../hooks/partidas/useEscuderia';
 import { BASE_URL } from '../../utils/api';
 
 /**
@@ -16,11 +17,14 @@ import { BASE_URL } from '../../utils/api';
  */
 export default function PartidaHeader() {
     const insets = useSafeAreaInsets();
-    const { partida, isLoading } = useActiveGame();
+    const { partida, isLoading: loadingGame } = useActiveGame();
+    
+    // Conectamos el Header directamente a la query de la escudería
+    // Esto permite que el presupuesto se actualice al invalidar esta query específica
+    const { data: escuderia, isLoading: loadingEscuderia } = useEscuderia(partida?.escuderia?.id || 0);
 
-    if (isLoading || !partida) return null;
+    if (loadingGame || !partida || !escuderia) return null;
 
-    const { escuderia } = partida;
     const localImage = escuderia.imagen ? getTeamImage(escuderia.imagen.replace(BASE_URL, '')) : null;
     const imageSource = localImage ? localImage : { uri: escuderia.imagen };
 

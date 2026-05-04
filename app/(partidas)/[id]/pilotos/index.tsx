@@ -21,22 +21,28 @@ export default function PilotosScreen() {
     const [selectedPiloto, setSelectedPiloto] = React.useState<Piloto | null>(null);
     const [modalOffersVisible, setModalOffersVisible] = React.useState(false);
     const [modalTransferVisible, setModalTransferVisible] = React.useState(false);
-    
+
     // Estados para Alineación
     const [modalAlineacionVisible, setModalAlineacionVisible] = React.useState(false);
     const [selectedAsiento, setSelectedAsiento] = React.useState<number>(1);
-    
+
     // Obtenemos los pilotos de nuestra escudería
     const escuderiaId = partida?.escuderia?.id;
-    const { 
-        data: pilotos, 
-        isLoading: loadingPilotos, 
+    const {
+        data: pilotos,
+        isLoading: loadingPilotos,
         error: errorPilotos,
         refetch
     } = usePilotosEscuderia(escuderiaId || 0);
 
-    // Estado de carga unificado
-    if (loadingGame || (loadingPilotos && !!escuderiaId)) {
+    const p1 = pilotos?.find(p => p.asiento === 1) || null;
+    const p2 = pilotos?.find(p => p.asiento === 2) || null;
+
+    // Estado de carga unificado: Solo mostramos el spinner de pantalla completa si NO tenemos datos.
+    // Durante un refetch (al cambiar alineación o gestionar ofertas), mantenemos la UI visible.
+    const isInitialLoading = (loadingGame && !partida) || (loadingPilotos && !pilotos && !!escuderiaId);
+
+    if (isInitialLoading) {
         return (
             <View className="flex-1 bg-[#0a0a0a] justify-center items-center">
                 <ActivityIndicator size="large" color="#E10600" />
@@ -63,8 +69,8 @@ export default function PilotosScreen() {
     }
 
     return (
-        <ScrollView 
-            className='flex-1 bg-[#0a0a0a]' 
+        <ScrollView
+            className='flex-1 bg-[#0a0a0a]'
             contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 25 }}
             showsVerticalScrollIndicator={false}
         >
@@ -75,8 +81,8 @@ export default function PilotosScreen() {
                     <Text className="text-white text-2xl font-black italic uppercase tracking-[-1px]">GESTIÓN DE PILOTOS</Text>
                     <View className="h-0.5 w-10 bg-[#E10600] mt-3" />
                 </View>
-                
-                <TouchableOpacity 
+
+                <TouchableOpacity
                     className="bg-[#151515] border border-[#222] p-3 rounded-2xl flex-row items-center shadow-sm active:opacity-70"
                 >
                     <View className="bg-[#E10600]/10 p-2 rounded-xl mr-2">
@@ -100,28 +106,18 @@ export default function PilotosScreen() {
                             </View>
                             <Text className="text-[#555] text-[10px] font-black uppercase tracking-[2px]">Primer Piloto</Text>
                         </View>
-                        {(() => {
-                            const p1 = pilotos.find(p => p.asiento === 1);
-                            const p1Mock = p1 ? { 
-                                ...p1, 
-                                ofertasPendientes: 2,
-                                ofertas: [
-                                    { id: 1, escuderiaId: 45, escuderiaNombre: 'Red Bull', escuderiaImagen: 'assets/images/teams/red-bull.png', monto: 65.5 },
-                                    { id: 2, escuderiaId: 48, escuderiaNombre: 'McLaren', escuderiaImagen: 'assets/images/teams/mclaren.png', monto: 48.2 }
-                                ]
-                            } : null;
 
-                            return (
-                                <DriverCard 
-                                    piloto={p1Mock} 
-                                    emptyLabel="ASIENTO 1 VACÍO"
-                                    onPress={() => { setSelectedAsiento(1); setModalAlineacionVisible(true); }}
-                                    onPressEmpty={() => { setSelectedAsiento(1); setModalAlineacionVisible(true); }}
-                                    onPressOffers={() => { if(p1Mock) { setSelectedPiloto(p1Mock); setModalOffersVisible(true); }}} 
-                                    onPressTransfer={() => { if(p1Mock) { setSelectedPiloto(p1Mock); setModalTransferVisible(true); }}}
-                                />
-                            );
-                        })()}
+
+
+                        <DriverCard
+                            piloto={p1}
+                            emptyLabel="ASIENTO 1 VACÍO"
+                            onPress={() => { setSelectedAsiento(1); setModalAlineacionVisible(true); }}
+                            onPressEmpty={() => { setSelectedAsiento(1); setModalAlineacionVisible(true); }}
+                            onPressOffers={() => { if (p1) { setSelectedPiloto(p1); setModalOffersVisible(true); } }}
+                            onPressTransfer={() => { if (p1) { setSelectedPiloto(p1); setModalTransferVisible(true); } }}
+                        />
+
 
                         <View className="flex-row items-center mb-4 px-1 mt-2">
                             <View className="bg-[#E10600] w-6 h-6 rounded-md items-center justify-center mr-3">
@@ -129,19 +125,15 @@ export default function PilotosScreen() {
                             </View>
                             <Text className="text-[#555] text-[10px] font-black uppercase tracking-[2px]">Segundo Piloto</Text>
                         </View>
-                        {(() => {
-                            const p2 = pilotos.find(p => p.asiento === 2);
-                            return (
-                                <DriverCard 
-                                    piloto={p2 || null} 
-                                    emptyLabel="ASIENTO 2 VACÍO"
-                                    onPress={() => { setSelectedAsiento(2); setModalAlineacionVisible(true); }}
-                                    onPressEmpty={() => { setSelectedAsiento(2); setModalAlineacionVisible(true); }}
-                                    onPressOffers={() => {}} 
-                                    onPressTransfer={() => {}}
-                                />
-                            );
-                        })()}
+                        
+                        <DriverCard
+                            piloto={p2}
+                            emptyLabel="ASIENTO 2 VACÍO"
+                            onPress={() => { setSelectedAsiento(2); setModalAlineacionVisible(true); }}
+                            onPressEmpty={() => { setSelectedAsiento(2); setModalAlineacionVisible(true); }}
+                            onPressOffers={() => { if (p2) { setSelectedPiloto(p2); setModalOffersVisible(true); } }}
+                            onPressTransfer={() => { if (p2) { setSelectedPiloto(p2); setModalTransferVisible(true); } }}
+                        />
                     </View>
 
                     {/* Sección de Reservas */}
@@ -152,11 +144,11 @@ export default function PilotosScreen() {
                                 <Text className="text-[#555] text-[10px] font-black uppercase tracking-[2px] ml-3">Pilotos de Reserva</Text>
                                 <View className="flex-1 h-[1px] bg-[#222] ml-4" />
                             </View>
-                            
+
                             {pilotos.filter(p => p.asiento === null).map((piloto) => (
-                                <DriverCard 
-                                    key={piloto.id} 
-                                    piloto={piloto} 
+                                <DriverCard
+                                    key={piloto.id}
+                                    piloto={piloto}
                                     onPress={() => {
                                         // Al pulsar un reserva, podríamos abrir su gestión o simplemente
                                         // informar de que debe asignarse a un asiento arriba.
@@ -174,11 +166,11 @@ export default function PilotosScreen() {
                     <Text className="text-[#555] mt-4 font-bold uppercase text-xs">No hay pilotos contratados</Text>
                 </View>
             )}
-            
+
             {/* Modal de Ofertas */}
-            <OffersModal 
-                visible={modalOffersVisible} 
-                onClose={() => setModalOffersVisible(false)} 
+            <OffersModal
+                visible={modalOffersVisible}
+                onClose={() => setModalOffersVisible(false)}
                 piloto={selectedPiloto}
             />
 

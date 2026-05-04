@@ -40,9 +40,18 @@ export interface Piloto {
  */
 export interface OfertaPiloto {
     id: number;
-    escuderiaId: number;
-    escuderiaNombre: string;
-    escuderiaImagen: string;
-    monto: number;
-    mensaje?: string;
+    precio: number;
+    temporada: number;
+    aceptada: boolean;
+    enCurso: boolean;
+    escuderiaOrigen: {
+        id: number;
+        nombre: string;
+        imagen: string;
+    };
+    escuderiaDestino: {
+        id: number;
+        nombre: string;
+        imagen: string;
+    };
 }
