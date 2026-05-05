@@ -11,26 +11,33 @@ export function useGestionarOferta() {
 
     const acceptMutation = useMutation({
         mutationFn: (ofertaId: number) => aceptarOferta(ofertaId),
-        onSuccess: () => {
+        onSuccess: (success) => {
+            if (!success) {
+                Alert.alert("Error", "No se ha podido aceptar la oferta. Verifica los requisitos (presupuesto, plantilla...)");
+                return;
+            }
             // Si aceptamos una oferta, invalidamos partida para refrescar el Header (presupuesto)
             // e invalidamos pilotos/escuderia para ver los cambios en la plantilla.
             queryClient.invalidateQueries({ queryKey: ['partida'] });
             queryClient.invalidateQueries({ queryKey: ['pilotos'] });
             queryClient.invalidateQueries({ queryKey: ['escuderia'] });
         },
-        onError: (error: any) => {
-            Alert.alert("Error", error.message || "No se ha podido aceptar la oferta.");
+        onError: () => {
+            Alert.alert("Error", "Error de conexión con el servidor.");
         }
     });
 
     const rejectMutation = useMutation({
         mutationFn: (ofertaId: number) => rechazarOferta(ofertaId),
-        onSuccess: () => {
-            // Si rechazamos, solo nos interesan las ofertas (que están dentro de pilotos)
+        onSuccess: (success) => {
+            if (!success) {
+                Alert.alert("Error", "No se ha podido rechazar la oferta.");
+                return;
+            }
             queryClient.invalidateQueries({ queryKey: ['pilotos'] });
         },
-        onError: (error: any) => {
-            Alert.alert("Error", error.message || "No se ha podido rechazar la oferta.");
+        onError: () => {
+            Alert.alert("Error", "Error de conexión con el servidor.");
         }
     });
 

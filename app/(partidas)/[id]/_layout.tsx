@@ -88,6 +88,14 @@ export default function PartidaLayout() {
             headerTitle: 'CLASIFICACIÓN MUNDIAL',
           }}
         />
+
+        {/* Ruta de Mercado: Registrada para el sistema de tipos pero oculta en las Tabs */}
+        <Tabs.Screen
+          name="pilotos/mercado"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </View>
   );

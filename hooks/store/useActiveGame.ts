@@ -14,29 +14,34 @@ export const useActiveGame = () => {
     const { partida, setPartida } = useGameStore();
 
     // El id del search params puede venir como string o array de strings
-    const urlId = Array.isArray(id) ? id[0] : id;
+    const rawId = Array.isArray(id) ? id[0] : id;
+    
+    // Ignoramos placeholders tipo "[id]" que a veces devuelve Expo Router en la carga inicial
+    const urlId = (rawId && rawId !== '[id]' && rawId !== '{id}') ? rawId : undefined;
 
     // Solo consideramos que NO coincide si tenemos un ID en la URL y es distinto al del Store.
     // Si urlId es undefined (transición), mantenemos la partida del Store como válida provisionalmente.
     const idCoincide = !!partida && (!urlId || partida.id.toString() === urlId.toString());
 
-    // Si no coincide o no hay partida en el store, pedimos los datos reales
+    // Si no coincide o no hay partida en el store, pedimos los datos reales (solo si tenemos un URL id real)
     const fetchId = !idCoincide ? urlId : undefined;
     const { data: serverPartida, isLoading, error } = usePartida(fetchId);
 
     useEffect(() => {
-        // Actualizamos el store si recibimos datos frescos del servidor.
-        // Comparamos el presupuesto o simplemente el objeto completo para asegurar sincronización 
-        // de datos internos (asientos, dinero, etc) incluso si el ID es el mismo.
-        if (serverPartida && JSON.stringify(serverPartida) !== JSON.stringify(partida)) {
-            setPartida(serverPartida);
+        if (serverPartida) {
+            console.log('[useActiveGame] Datos recibidos del servidor para partida:', serverPartida.id);
+            // Solo actualizamos si realmente es diferente para evitar loops
+            if (JSON.stringify(serverPartida) !== JSON.stringify(partida)) {
+                console.log('[useActiveGame] Actualizando store con datos frescos');
+                setPartida(serverPartida);
+            }
         }
-    }, [serverPartida, setPartida]);
+    }, [serverPartida, setPartida, partida]);
 
     return {
-        // Si urlId es el correcto, usamos lo del store. Si no, lo que venga del server.
+        // Priorizamos la partida del servidor si acabamos de hacer fetch por discrepancia de ID
         partida: idCoincide ? partida : serverPartida,
-        isLoading: !idCoincide && isLoading,
+        isLoading: !idCoincide && !!urlId && isLoading,
         error: error ? 'Error al sincronizar la sesión de juego' : null
     };
 };

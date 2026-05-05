@@ -1,14 +1,15 @@
+import { Piloto } from '@/types/piloto';
 import { Ionicons } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { ActivityIndicator, ScrollView, Text, View, TouchableOpacity } from 'react-native';
-import { useActiveGame } from '../../../../hooks/store/useActiveGame';
-import { usePilotosEscuderia } from '../../../../hooks/pilotos/usePilotosEscuderia';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import AlineacionModal from '../../../../components/pilotos/AlineacionModal';
 import DriverCard from '../../../../components/pilotos/DriverCard';
 import OffersModal from '../../../../components/pilotos/OffersModal';
 import TransferModal from '../../../../components/pilotos/TransferModal';
-import AlineacionModal from '../../../../components/pilotos/AlineacionModal';
 import { useAlinearPiloto } from '../../../../hooks/pilotos/useAlinearPiloto';
-import { Piloto } from '@/types/piloto';
+import { usePilotosEscuderia } from '../../../../hooks/pilotos/usePilotosEscuderia';
+import { useActiveGame } from '../../../../hooks/store/useActiveGame';
 
 /**
  * PilotosScreen
@@ -83,6 +84,7 @@ export default function PilotosScreen() {
                 </View>
 
                 <TouchableOpacity
+                    onPress={() => router.push("/(partidas)/[id]/pilotos/mercado")}
                     className="bg-[#151515] border border-[#222] p-3 rounded-2xl flex-row items-center shadow-sm active:opacity-70"
                 >
                     <View className="bg-[#E10600]/10 p-2 rounded-xl mr-2">
@@ -125,7 +127,7 @@ export default function PilotosScreen() {
                             </View>
                             <Text className="text-[#555] text-[10px] font-black uppercase tracking-[2px]">Segundo Piloto</Text>
                         </View>
-                        
+
                         <DriverCard
                             piloto={p2}
                             emptyLabel="ASIENTO 2 VACÍO"
