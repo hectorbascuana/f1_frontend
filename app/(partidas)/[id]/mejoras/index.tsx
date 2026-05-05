@@ -1,12 +1,12 @@
 import CarCard from '@/components/mejoras/CarCard';
 import FacilityRow from '@/components/mejoras/FacilityRow';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View, Animated } from 'react-native';
-import { useEscuderia } from '../../../../hooks/partidas/useEscuderia';
-import { useActiveGame } from '../../../../hooks/store/useActiveGame';
-import { useMejorarEscuderia } from '../../../../hooks/escuderia/useMejorarEscuderia';
 import { TipoMejora } from '@/types/escuderia';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Animated, Text, TouchableOpacity, View } from 'react-native';
+import { useMejorarEscuderia } from '../../../../core/api/hooks/escuderia/useMejorarEscuderia';
+import { useEscuderia } from '../../../../core/api/hooks/partidas/useEscuderia';
+import { useActiveGame } from '../../../../hooks/store/useActiveGame';
 
 
 /**
@@ -55,7 +55,7 @@ export default function MejorasScreen() {
 
     const handleMejorar = (tipo: TipoMejora, label: string) => {
         if (!escuderiaId) return;
-        
+
         mejorar({ escuderiaId, tipoMejora: tipo }, {
             onSuccess: (data) => {
                 // Solo mostramos el panel para Motor y Aerodinámica
@@ -110,7 +110,7 @@ export default function MejorasScreen() {
                     <Text className="text-white text-2xl font-black italic uppercase tracking-[-1px]">I+D Y MEJORAS</Text>
                     {mejorando && <ActivityIndicator size="small" color="#E10600" />}
                 </View>
-                
+
                 {/* Visualización de errores de mutación */}
                 {errorMejora && (
                     <View className="mt-2 bg-red-500/10 border border-red-500/20 p-2 rounded-lg flex-row items-center">
@@ -129,34 +129,34 @@ export default function MejorasScreen() {
                     <Text className="text-[#555] text-[9px] font-black uppercase tracking-[2px]">Evolución del Coche</Text>
                 </View>
                 <View className="flex-row">
-                    <CarCard 
-                        label="Aerodinámica" 
-                        value={escuderia.aerodinamica} 
-                        cost={escuderia.aerodinamicaCosto} 
-                        presupuesto={escuderia.presupuesto} 
-                        icon="airplane" 
-                        color="#00D2FF" 
+                    <CarCard
+                        label="Aerodinámica"
+                        value={escuderia.aerodinamica}
+                        cost={escuderia.aerodinamicaCosto}
+                        presupuesto={escuderia.presupuesto}
+                        icon="airplane"
+                        color="#00D2FF"
                         onPress={() => handleMejorar(TipoMejora.AERODINAMICA, "Aerodinámica")}
                     />
-                    <CarCard 
-                        label="Potencia Motor" 
-                        value={escuderia.motor} 
-                        cost={escuderia.motorCosto} 
-                        presupuesto={escuderia.presupuesto} 
-                        icon="flame" 
-                        color="#FF1E1E" 
+                    <CarCard
+                        label="Potencia Motor"
+                        value={escuderia.motor}
+                        cost={escuderia.motorCosto}
+                        presupuesto={escuderia.presupuesto}
+                        icon="flame"
+                        color="#FF1E1E"
                         onPress={() => handleMejorar(TipoMejora.MOTOR, "Motor")}
                     />
                 </View>
                 <View className="flex-row">
-                    <CarCard 
-                        label="Durabilidad" 
-                        value={escuderia.durabilidad} 
-                        cost={escuderia.durabilidadCosto} 
-                        presupuesto={escuderia.presupuesto} 
-                        icon="shield-checkmark" 
-                        color="#4CD964" 
-                        maxValue={20} 
+                    <CarCard
+                        label="Durabilidad"
+                        value={escuderia.durabilidad}
+                        cost={escuderia.durabilidadCosto}
+                        presupuesto={escuderia.presupuesto}
+                        icon="shield-checkmark"
+                        color="#4CD964"
+                        maxValue={20}
                         onPress={() => handleMejorar(TipoMejora.DURABILIDAD, "Durabilidad")}
                     />
                     <View className="flex-1 m-1" />
@@ -169,32 +169,32 @@ export default function MejorasScreen() {
                     <View className="w-1 h-1 bg-amber-500 rounded-full mr-2" />
                     <Text className="text-[#555] text-[9px] font-black uppercase tracking-[2px]">Instalaciones HQ</Text>
                 </View>
-                <FacilityRow 
-                    label="Túnel Viento" 
-                    value={escuderia.tunelViento} 
-                    cost={escuderia.tunelVientoCosto} 
-                    presupuesto={escuderia.presupuesto} 
-                    icon="air" 
-                    color="#FFD700" 
-                    IconSet={MaterialIcons} 
+                <FacilityRow
+                    label="Túnel Viento"
+                    value={escuderia.tunelViento}
+                    cost={escuderia.tunelVientoCosto}
+                    presupuesto={escuderia.presupuesto}
+                    icon="air"
+                    color="#FFD700"
+                    IconSet={MaterialIcons}
                     onPress={() => handleMejorar(TipoMejora.TUNEL_VIENTO, "Túnel de Viento")}
                 />
-                <FacilityRow 
-                    label="Banco Pruebas" 
-                    value={escuderia.bancoPruebas} 
-                    cost={escuderia.bancoPruebasCosto} 
-                    presupuesto={escuderia.presupuesto} 
-                    icon="speedometer-outline" 
-                    color="#FF8C00" 
+                <FacilityRow
+                    label="Banco Pruebas"
+                    value={escuderia.bancoPruebas}
+                    cost={escuderia.bancoPruebasCosto}
+                    presupuesto={escuderia.presupuesto}
+                    icon="speedometer-outline"
+                    color="#FF8C00"
                     onPress={() => handleMejorar(TipoMejora.BANCO_PRUEBAS, "Banco de Pruebas")}
                 />
-                <FacilityRow 
-                    label="Academia" 
-                    value={escuderia.escuelaPilotos} 
-                    cost={escuderia.escuelaPilotosCosto} 
-                    presupuesto={escuderia.presupuesto} 
-                    icon="school" 
-                    color="#A020F0" 
+                <FacilityRow
+                    label="Academia"
+                    value={escuderia.escuelaPilotos}
+                    cost={escuderia.escuelaPilotosCosto}
+                    presupuesto={escuderia.presupuesto}
+                    icon="school"
+                    color="#A020F0"
                     onPress={() => handleMejorar(TipoMejora.ESCUELA_PILOTOS, "Escuela de Pilotos")}
                 />
             </View>
@@ -210,15 +210,15 @@ export default function MejorasScreen() {
                 const level = getLevelData(showAumento.value);
 
                 return (
-                    <Animated.View 
-                        style={{ 
-                            opacity: fadeAnim, 
+                    <Animated.View
+                        style={{
+                            opacity: fadeAnim,
                             transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
                             shadowColor: level.color,
                             shadowOffset: { width: 0, height: 10 },
                             shadowOpacity: showAumento.value >= 3 ? 0.5 : 0.2,
                             shadowRadius: 20,
-                            borderColor: `${level.color}40`, 
+                            borderColor: `${level.color}40`,
                             borderWidth: 1
                         }}
                         className={`absolute bottom-10 left-5 right-5 bg-[#151515] border rounded-2xl p-4 flex-row items-center justify-between z-50`}

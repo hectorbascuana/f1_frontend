@@ -4,8 +4,8 @@ import { ActivityIndicator, FlatList, Image, Modal, Text, TouchableOpacity, View
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ESCUDERIAS_DATA } from '../../../../constants/EscuderiasData';
 import { getTeamImage } from '../../../../constants/TeamAssets';
-import { useCircuito } from '../../../../hooks/carrera/useCircuito';
-import { useCircuitos } from '../../../../hooks/carrera/useCircuitos';
+import { useCircuito } from '../../../../core/api/hooks/carrera/useCircuito';
+import { useCircuitos } from '../../../../core/api/hooks/carrera/useCircuitos';
 import { useActiveGame } from '../../../../hooks/store/useActiveGame';
 
 // Datos de pilotos para la clasificación de ejemplo

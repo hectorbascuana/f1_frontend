@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
-import { Partida } from '../../types/partida';
-import { api } from '@/utils/api';
-import { PartidaDTO } from '@/core/types/partidaDTO';
 import { mapPartidaFromDTO } from '@/core/mappers/partidaMapper';
+import { PartidaDTO } from '@/core/types/partidaDTO';
+import { api } from '@/utils/api';
+import { useQuery } from '@tanstack/react-query';
+import { Partida } from '../../../../types/partida';
 
 /**
  * Hook usePartida

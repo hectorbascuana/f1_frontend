@@ -1,9 +1,9 @@
 import { getTeamImage } from "@/constants/TeamAssets";
+import { useGestionarOferta } from "@/core/api/hooks/pilotos/useGestionarOferta";
 import { Piloto } from "@/types/piloto";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect } from "react";
 import { ActivityIndicator, Image, Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { useGestionarOferta } from "@/hooks/pilotos/useGestionarOferta";
 
 /**
  * OffersModal

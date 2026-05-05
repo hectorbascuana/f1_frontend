@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { borrarPartida } from '../../core/api/partidas.action';
 import { Alert } from 'react-native';
-import { Partida } from '../../types/partida';
+import { Partida } from '../../../../types/partida';
+import { borrarPartida } from '../../action/partidas.action';
 
 /**
  * useBorrarPartida
@@ -14,7 +14,7 @@ export const useBorrarPartida = () => {
 
     return useMutation({
         mutationFn: (id: number) => borrarPartida(id),
-        
+
         // Actualización Optimista: Se ejecuta antes de la función de mutación
         onMutate: async (idASuprimir) => {
             // Cancelamos refetches salientes para no sobrescribir nuestra actualización optimista
@@ -25,7 +25,7 @@ export const useBorrarPartida = () => {
 
             // Actualizamos el caché de forma optimista eliminando la partida
             if (partidasPrevias) {
-                queryClient.setQueryData(['partidas'], 
+                queryClient.setQueryData(['partidas'],
                     partidasPrevias.filter(p => p.id !== idASuprimir)
                 );
             }

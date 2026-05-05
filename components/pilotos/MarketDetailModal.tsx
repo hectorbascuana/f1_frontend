@@ -1,6 +1,6 @@
 import { getDriverImage } from "@/constants/DriverAssets";
 import { getTeamImage } from "@/constants/TeamAssets";
-import { RespuestaNegociacion } from "@/core/api/traspasos.action";
+import { RespuestaNegociacion } from "@/core/api/action/traspasos.action";
 import { Piloto } from "@/types/piloto";
 import { BASE_URL } from "@/utils/api";
 import { Ionicons } from "@expo/vector-icons";
@@ -244,9 +244,8 @@ export default function MarketDetailModal({
                             <TouchableOpacity
                                 onPress={onSendOffer}
                                 disabled={isSending || !hasEnoughFunds}
-                                className={`py-5 rounded-2xl flex-row items-center justify-center shadow-xl active:opacity-90 ${
-                                    (isSending || !hasEnoughFunds) ? 'bg-gray-800 opacity-50' : 'bg-[#E10600]'
-                                }`}
+                                className={`py-5 rounded-2xl flex-row items-center justify-center shadow-xl active:opacity-90 ${(isSending || !hasEnoughFunds) ? 'bg-gray-800 opacity-50' : 'bg-[#E10600]'
+                                    }`}
                             >
                                 <Ionicons name={hasEnoughFunds ? "send-outline" : "alert-circle-outline"} size={16} color="white" />
                                 <Text className="text-white font-black text-[13px] uppercase italic tracking-[2px] ml-3">

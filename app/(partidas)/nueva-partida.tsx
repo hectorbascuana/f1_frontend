@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, Pressable, ActivityIndicator, Alert } from 'react-native';
-import { useRouter, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { ESCUDERIAS_DATA } from '../../constants/EscuderiasData';
 import { getTeamImage } from '../../constants/TeamAssets';
+import { useCrearPartida } from '../../core/api/hooks/partidas/useCrearPartida';
 import { Escuderia } from '../../types/escuderia';
-import { useCrearPartida } from '../../hooks/partidas/useCrearPartida';
 
 /**
  * NuevaPartidaScreen
@@ -19,13 +19,13 @@ export default function NuevaPartidaScreen() {
 
     // Integración del hook de mutación
     const { mutateAsync, isPending } = useCrearPartida();
- 
+
     // Lógica para deshabilitar el botón de envío
     const isFormInvalid = nombrePartida.trim().length < 3 || !escuderiaSeleccionada;
- 
+
     const handleCrearPartida = async () => {
         if (isFormInvalid) return;
- 
+
         try {
             await mutateAsync({
                 nombre: nombrePartida,
@@ -42,8 +42,8 @@ export default function NuevaPartidaScreen() {
         return (
             <View className="flex-row">
                 {[1, 2, 3, 4, 5].map((i) => (
-                    <View 
-                        key={i} 
+                    <View
+                        key={i}
                         className={`w-3.5 h-1.5 rounded-full mr-0.5 ${i <= level ? color : 'bg-[#333]'}`}
                     />
                 ))}
@@ -80,24 +80,23 @@ export default function NuevaPartidaScreen() {
 
                 {/* Selección de Escudería */}
                 <Text className="text-[#AAAAAA] text-xs font-bold tracking-[2px] mb-4 uppercase">Selecciona tu Escudería</Text>
-                
-                <ScrollView 
-                    horizontal 
-                    showsHorizontalScrollIndicator={false} 
+
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
                     className="mb-8"
                     contentContainerClassName="pr-6"
                 >
                     {ESCUDERIAS_DATA.map((item) => (
-                        <Pressable 
+                        <Pressable
                             key={item.id}
                             onPress={() => !isPending && setEscuderiaSeleccionada(item)}
-                            className={`mr-4 w-24 h-24 rounded-2xl border-2 items-center justify-center overflow-hidden ${
-                                escuderiaSeleccionada.id === item.id 
-                                ? 'border-[#E10600] bg-[#1e1e1e]' 
-                                : 'border-[#222] bg-[#151515]'
-                            }`}
+                            className={`mr-4 w-24 h-24 rounded-2xl border-2 items-center justify-center overflow-hidden ${escuderiaSeleccionada.id === item.id
+                                    ? 'border-[#E10600] bg-[#1e1e1e]'
+                                    : 'border-[#222] bg-[#151515]'
+                                }`}
                         >
-                            <Image 
+                            <Image
                                 source={getTeamImage(item.imagen)}
                                 className="w-full h-full"
                                 resizeMode="cover"
@@ -114,12 +113,12 @@ export default function NuevaPartidaScreen() {
                 {/* Detalle de la Escudería Seleccionada */}
                 <View className="bg-[#151515] border border-[#222] rounded-3xl p-6 mb-10 overflow-hidden">
                     <View className="absolute top-0 right-0 p-4 opacity-10">
-                         <Ionicons name="speedometer-outline" size={120} color="white" />
+                        <Ionicons name="speedometer-outline" size={120} color="white" />
                     </View>
 
                     <View className="flex-row items-center mb-6">
                         <View className="w-20 h-20 bg-black rounded-2xl mr-4 items-center justify-center border border-[#333] overflow-hidden">
-                            <Image 
+                            <Image
                                 source={getTeamImage(escuderiaSeleccionada.imagen)}
                                 className="w-full h-full"
                                 resizeMode="cover"
@@ -180,10 +179,9 @@ export default function NuevaPartidaScreen() {
                 </View>
 
                 {/* Botón Iniciar */}
-                <TouchableOpacity 
-                    className={`rounded-2xl py-4 flex-row justify-center items-center mb-10 ${
-                        isFormInvalid || isPending ? 'bg-[#222]' : 'bg-[#E10600]'
-                    }`}
+                <TouchableOpacity
+                    className={`rounded-2xl py-4 flex-row justify-center items-center mb-10 ${isFormInvalid || isPending ? 'bg-[#222]' : 'bg-[#E10600]'
+                        }`}
                     disabled={isFormInvalid || isPending}
                     onPress={handleCrearPartida}
                 >

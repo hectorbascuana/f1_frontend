@@ -1,8 +1,6 @@
+import { circuito } from '@/core/api/action/circuitos.action';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { BASE_URL } from '../../utils/api';
-import { Circuito } from '../../types/circuito';
-import { circuito } from '@/core/api/circuitos.action';
+import { Circuito } from '../../../../types/circuito';
 
 /**
  * Hook useCircuito

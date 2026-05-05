@@ -1,14 +1,14 @@
 import { Piloto } from '@/types/piloto';
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import AlineacionModal from '../../../../components/pilotos/AlineacionModal';
 import DriverCard from '../../../../components/pilotos/DriverCard';
 import OffersModal from '../../../../components/pilotos/OffersModal';
 import TransferModal from '../../../../components/pilotos/TransferModal';
-import { useAlinearPiloto } from '../../../../hooks/pilotos/useAlinearPiloto';
-import { usePilotosEscuderia } from '../../../../hooks/pilotos/usePilotosEscuderia';
+import { useAlinearPiloto } from '../../../../core/api/hooks/pilotos/useAlinearPiloto';
+import { usePilotosEscuderia } from '../../../../core/api/hooks/pilotos/usePilotosEscuderia';
 import { useActiveGame } from '../../../../hooks/store/useActiveGame';
 
 /**

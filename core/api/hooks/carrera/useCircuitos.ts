@@ -1,6 +1,6 @@
+import { circuitos } from '@/core/api/action/circuitos.action';
 import { useQuery } from '@tanstack/react-query';
-import { Circuito } from '../../types/circuito';
-import { circuitos } from '@/core/api/circuitos.action';
+import { Circuito } from '../../../../types/circuito';
 
 /**
  * Hook useCircuitos

@@ -1,6 +1,5 @@
+import { Piloto } from "@/types/piloto";
 import { api } from "@/utils/api";
-import { OfertaPiloto, Piloto } from "@/types/piloto";
-import { mapOfertasFromDTO } from "../mappers/pilotoMapper";
 import { traspasoPiloto } from "./traspasos.action";
 
 /**
@@ -11,7 +10,7 @@ import { traspasoPiloto } from "./traspasos.action";
 export const obtenerPilotosEscuderia = async (escuderiaId: number): Promise<Piloto[]> => {
     try {
         const { data } = await api.get<Piloto[]>(`pilotos/escuderia/${escuderiaId}`);
-        
+
         // Resolvemos las ofertas de cada piloto de forma concurrente
         // Usamos Promise.all para esperar a que todas las peticiones asíncronas finalicen
         await Promise.all(
@@ -21,7 +20,7 @@ export const obtenerPilotosEscuderia = async (escuderiaId: number): Promise<Pilo
                 piloto.ofertasPendientes = ofertas.length;
             })
         );
-       
+
         return data;
     } catch (error) {
         console.error('Error al cargar pilotos de la escudería:', error);
@@ -47,7 +46,7 @@ export const obtenerPilotosPartida = async (partidaId: number): Promise<Piloto[]
                 piloto.ofertas = ofertas;
             })
         );
-        
+
         return data;
     } catch (error: any) {
         console.error('Error detallado en Mercado:', {

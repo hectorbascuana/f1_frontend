@@ -1,6 +1,6 @@
 import { OfertaPiloto, Piloto } from "@/types/piloto";
 import { api } from "@/utils/api";
-import { mapOfertasFromDTO } from "../mappers/pilotoMapper";
+import { mapOfertasFromDTO } from "../../mappers/pilotoMapper";
 
 /**
  * Recupera las ofertas de traspaso asociadas a un piloto específico.

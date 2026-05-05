@@ -1,7 +1,7 @@
 import { useGlobalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
+import { usePartida } from '../../core/api/hooks/partidas/usePartida';
 import { useGameStore } from '../../core/store/useGameStore';
-import { usePartida } from '../partidas/usePartida';
 
 /**
  * Hook useActiveGame
@@ -15,7 +15,7 @@ export const useActiveGame = () => {
 
     // El id del search params puede venir como string o array de strings
     const rawId = Array.isArray(id) ? id[0] : id;
-    
+
     // Ignoramos placeholders tipo "[id]" que a veces devuelve Expo Router en la carga inicial
     const urlId = (rawId && rawId !== '[id]' && rawId !== '{id}') ? rawId : undefined;
 

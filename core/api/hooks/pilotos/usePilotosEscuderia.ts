@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { obtenerPilotosEscuderia } from '@/core/api/piloto.action';
+import { obtenerPilotosEscuderia } from '@/core/api/action/piloto.action';
 import { Piloto } from '@/types/piloto';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * Hook para gestionar la carga de pilotos de una escudería.

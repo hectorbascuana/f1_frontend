@@ -2,8 +2,8 @@ import { useFocusEffect } from 'expo-router';
 import React, { useCallback } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import PartidaSlot from '../../components/partidas/PartidaSlot';
+import { usePartidas } from '../../core/api/hooks/partidas/usePartidas';
 import { useGameStore } from '../../core/store/useGameStore';
-import { usePartidas } from '../../hooks/partidas/usePartidas';
 
 /**
  * Pantalla de Inicio (index.tsx)
@@ -28,7 +28,7 @@ export default function MenuPartidasScreen() {
         }, [])
     );
 
-    
+
 
     return (
         <View className="flex-1 bg-[#0a0a0a] pt-[50px]">

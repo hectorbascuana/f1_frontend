@@ -1,4 +1,4 @@
-import { obtenerPilotosPartida } from '@/core/api/piloto.action';
+import { obtenerPilotosPartida } from '@/core/api/action/piloto.action';
 import { Piloto } from '@/types/piloto';
 import { useQuery } from '@tanstack/react-query';
 

@@ -1,5 +1,5 @@
+import { partidas as getPartidas } from '@/core/api/action/partidas.action';
 import { useQuery } from '@tanstack/react-query';
-import { partidas as getPartidas } from '@/core/api/partidas.action';
 
 /**
  * usePartidas

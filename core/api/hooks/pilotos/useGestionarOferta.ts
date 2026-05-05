@@ -1,5 +1,5 @@
+import { aceptarOferta, rechazarOferta } from "@/core/api/action/traspasos.action";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { aceptarOferta, rechazarOferta } from "@/core/api/traspasos.action";
 import { Alert } from "react-native";
 
 /**

@@ -4,7 +4,7 @@ import React from 'react';
 import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MarketListItem from '@/components/pilotos/MarketListItem';
 import MarketDetailModal from '@/components/pilotos/MarketDetailModal';
-import { useMercado } from '@/hooks/mercado/useMercado';
+import { useMercado } from '@/core/api/hooks/mercado/useMercado';
 
 /**
  * MercadoScreen

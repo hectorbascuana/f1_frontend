@@ -1,10 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router, Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 import { getTeamImage } from '../../constants/TeamAssets';
+import { useBorrarPartida } from '../../core/api/hooks/partidas/useBorrarPartida';
 import { useGameStore } from '../../core/store/useGameStore';
-import { useBorrarPartida } from '../../hooks/partidas/useBorrarPartida';
 import { Partida } from '../../types/partida';
 import { BASE_URL } from '../../utils/api';
 

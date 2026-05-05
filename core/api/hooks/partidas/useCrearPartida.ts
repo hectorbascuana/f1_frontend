@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { crearPartida } from '../../core/api/partidas.action';
 import { router } from 'expo-router';
-import { useGameStore } from '../../core/store/useGameStore';
+import { useGameStore } from '../../../store/useGameStore';
+import { crearPartida } from '../../action/partidas.action';
 
 /**
  * useCrearPartida
@@ -13,13 +13,13 @@ export const useCrearPartida = () => {
     const setPartida = useGameStore((state) => state.setPartida);
 
     return useMutation({
-        mutationFn: ({ nombre, escuderiaId }: { nombre: string; escuderiaId: number }) => 
+        mutationFn: ({ nombre, escuderiaId }: { nombre: string; escuderiaId: number }) =>
             crearPartida(nombre, escuderiaId),
-        
+
         onSuccess: (data) => {
             // Invalidamos la consulta de partidas para que el caché esté fresco
             queryClient.invalidateQueries({ queryKey: ['partidas'] });
-            
+
             // Guardamos la partida completa en el Store inmediatamente
             setPartida(data);
 

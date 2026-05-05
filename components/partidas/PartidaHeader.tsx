@@ -3,8 +3,8 @@ import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getTeamImage } from '../../constants/TeamAssets';
+import { useEscuderia } from '../../core/api/hooks/partidas/useEscuderia';
 import { useActiveGame } from '../../hooks/store/useActiveGame';
-import { useEscuderia } from '../../hooks/partidas/useEscuderia';
 import { BASE_URL } from '../../utils/api';
 
 /**
@@ -18,7 +18,7 @@ import { BASE_URL } from '../../utils/api';
 export default function PartidaHeader() {
     const insets = useSafeAreaInsets();
     const { partida, isLoading: loadingGame } = useActiveGame();
-    
+
     // Conectamos el Header directamente a la query de la escudería
     // Esto permite que el presupuesto se actualice al invalidar esta query específica
     const { data: escuderia, isLoading: loadingEscuderia } = useEscuderia(partida?.escuderia?.id || 0);
@@ -50,8 +50,8 @@ export default function PartidaHeader() {
 
                     <View className="ml-3 flex-1">
                         <Text className="text-[#555] text-[9px] font-black uppercase tracking-[2px]">Escudería Oficial</Text>
-                        <Text 
-                            numberOfLines={1} 
+                        <Text
+                            numberOfLines={1}
                             ellipsizeMode="tail"
                             className="text-white text-lg font-black italic uppercase leading-tight tracking-[-0.5px]"
                         >
@@ -68,7 +68,7 @@ export default function PartidaHeader() {
                         </View>
                         <View>
                             <Text className="text-[#444] text-[8px] font-black uppercase tracking-[1px] mb-0.5">Tesorería</Text>
-                            <Text 
+                            <Text
                                 className="text-emerald-400 font-black text-sm tracking-[0.5px]"
                                 style={{ fontSize: escuderia.presupuesto > 9999 ? 12 : 14 }}
                             >

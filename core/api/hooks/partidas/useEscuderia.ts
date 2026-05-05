@@ -1,6 +1,6 @@
+import { escuderia } from '@/core/api/action/escuderia.action';
 import { useQuery } from '@tanstack/react-query';
-import { Escuderia } from '../../types/escuderia';
-import { escuderia } from '@/core/api/escuderia.action';
+import { Escuderia } from '../../../../types/escuderia';
 
 export const useEscuderia = (identity: number) => {
     return useQuery<Escuderia>({

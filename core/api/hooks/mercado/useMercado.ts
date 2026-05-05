@@ -1,21 +1,19 @@
-import { useState } from 'react';
-import { Alert } from 'react-native';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { usePilotosMercado } from '@/hooks/pilotos/usePilotosMercado';
+import { enviarOferta, obtenerPilotosBloqueados, RespuestaNegociacion } from '@/core/api/action/traspasos.action';
+import { usePilotosMercado } from '@/core/api/hooks/pilotos/usePilotosMercado';
 import { useActiveGame } from '@/hooks/store/useActiveGame';
-import { enviarOferta, obtenerPilotosBloqueados, RespuestaNegociacion } from '@/core/api/traspasos.action';
 import { Piloto } from '@/types/piloto';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export function useMercado() {
     const queryClient = useQueryClient();
     const { partida, isLoading: loadingGame, error: errorGame } = useActiveGame();
-    
+
     // Estados UI de Mercado
     const [selectedPiloto, setSelectedPiloto] = useState<Piloto | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [search, setSearch] = useState('');
-    
+
     // Lógica y estados de negociación
     const [offerPrice, setOfferPrice] = useState<number>(0);
     const [negotiationStatus, setNegotiationStatus] = useState<'idle' | 'loading' | 'result'>('idle');
@@ -24,11 +22,11 @@ export function useMercado() {
     // Listado de IDs bloqueados localmente en esta sesión (para respuesta inmediata)
     const [localBlockedIds, setLocalBlockedIds] = useState<number[]>([]);
 
-    const { 
-        data: pilotos, 
-        isLoading: loadingPilotos, 
-        error: errorPilotos, 
-        refetch 
+    const {
+        data: pilotos,
+        isLoading: loadingPilotos,
+        error: errorPilotos,
+        refetch
     } = usePilotosMercado(partida?.id || 0);
 
     // Consulta oficial de bloqueos del servidor
@@ -44,19 +42,19 @@ export function useMercado() {
     const isPilotoBlocked = (piloto: Piloto): boolean => {
         // 1. Verificamos bloqueos locales de la sesión
         if (localBlockedIds.includes(piloto.id)) return true;
-        
+
         // 2. Verificamos la respuesta oficial del servidor
         if (serverBlockedIds?.includes(piloto.id)) return true;
 
         // 3. (Fallback) Verificamos el historial de ofertas persistentes
         if (!partida || !piloto.ofertas) return false;
-        return piloto.ofertas.some(o => 
+        return piloto.ofertas.some(o =>
             !o.aceptada && !o.enCurso && o.escuderiaDestino?.id === partida.escuderia?.id
         );
     };
 
     // Filtrado de pilotos por nombre
-    const filteredPilotos = pilotos?.filter(p => 
+    const filteredPilotos = pilotos?.filter(p =>
         p.nombre.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -91,7 +89,7 @@ export function useMercado() {
 
     // Mutación para conectar con el backend y TanStack Query
     const mutation = useMutation({
-        mutationFn: (precio: number) => 
+        mutationFn: (precio: number) =>
             enviarOferta(partida!.id, selectedPiloto!.id, partida!.escuderia.id, precio),
         onMutate: () => {
             setNegotiationStatus('loading');
@@ -135,7 +133,7 @@ export function useMercado() {
                 setNegotiationResult(data);
                 setNegotiationStatus('result');
             }
-            
+
             // Invalidar queries para actualizar partida (presupuesto), mercado y alineaciones
             queryClient.invalidateQueries({ queryKey: ['partida'] });
             queryClient.invalidateQueries({ queryKey: ['pilotos'] });
@@ -158,7 +156,7 @@ export function useMercado() {
                     return [...prev, selectedPiloto.id];
                 });
             }
-            
+
             queryClient.invalidateQueries({ queryKey: ['partida'] });
             queryClient.invalidateQueries({ queryKey: ['pilotos'] });
             queryClient.invalidateQueries({ queryKey: ['escuderia'] });
@@ -183,17 +181,17 @@ export function useMercado() {
         offerPrice,
         bloqueadosIds: serverBlockedIds || localBlockedIds,
         hasEnoughFunds,
-        
+
         // Estado de Negociación para el Modal
         negotiationStatus,
         negotiationResult,
         isSending: mutation.isPending,
-        
+
         // Flags de Carga y Error
         isLoading: loadingGame || loadingPilotos,
         error: errorGame || errorPilotos,
         loadingGame,
-        
+
         // Acciones
         setSearch,
         setOfferPrice,

@@ -1,7 +1,7 @@
 import { Partida } from '@/types/partida';
 import { api } from '@/utils/api';
-import { mapPartidaFromDTO, mapPartidasFromDTOList } from '../mappers/partidaMapper';
-import { PartidaDTO } from '../types/partidaDTO';
+import { mapPartidaFromDTO, mapPartidasFromDTOList } from '../../mappers/partidaMapper';
+import { PartidaDTO } from '../../types/partidaDTO';
 
 /**
  * partidas (Action)
@@ -16,10 +16,10 @@ export const partidas = async (): Promise<Partida[]> => {
 
         // Registro de datos recibidos para facilitar la trazabilidad durante el desarrollo
         console.log('Datos de partidas recibidos (RAW):', JSON.stringify(data, null, 2));
-        
+
         // Mapeamos los datos al modelo de dominio
         const mappedData = mapPartidasFromDTOList(data);
-        
+
         console.log('Datos de partidas mapeados:', JSON.stringify(mappedData, null, 2));
 
         return mappedData;
@@ -41,9 +41,9 @@ export const crearPartida = async (nombre: string, escuderiaId: number): Promise
         const { data } = await api.post<PartidaDTO>('partida/nueva', { nombre, idEscuderiaJson: escuderiaId });
 
         console.log('Objeto de partida recibido (RAW):', JSON.stringify(data, null, 2));
-        
+
         // Mapeamos el DTO al modelo de Dominio
-        return mapPartidaFromDTO(data); 
+        return mapPartidaFromDTO(data);
     } catch (error: any) {
         console.error('Error al crear la partida:', error.response?.status, error.response?.data || error.message);
         throw new Error('No se ha podido crear la nueva partida. Inténtalo de nuevo.');
