@@ -44,6 +44,11 @@ export interface OfertaPiloto {
     temporada: number;
     aceptada: boolean;
     enCurso: boolean;
+    piloto?: {
+        id: number;
+        nombre: string;
+        imagen: string;
+    };
     escuderiaOrigen: {
         id: number;
         nombre: string;

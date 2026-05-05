@@ -23,7 +23,12 @@ export const mapOfertasFromDTO = (ofertasRaw: any[]): OfertaPiloto[] => {
             id: raw.escuderiaDestino.id,
             nombre: raw.escuderiaDestino.nombre,
             imagen: raw.escuderiaDestino.imagen
-        }
-        // El campo 'piloto' se omite intencionadamente
+        },
+        // Mapeamos el piloto si viene incluido (útil para el historial global)
+        piloto: raw.piloto ? {
+            id: raw.piloto.id,
+            nombre: raw.piloto.nombre,
+            imagen: raw.piloto.imagen
+        } : undefined
     }));
 };

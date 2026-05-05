@@ -134,10 +134,11 @@ export function useMercado() {
                 setNegotiationStatus('result');
             }
 
-            // Invalidar queries para actualizar partida (presupuesto), mercado y alineaciones
+            // Invalidar queries para actualizar partida (presupuesto), mercado, alineaciones e historial
             queryClient.invalidateQueries({ queryKey: ['partida'] });
             queryClient.invalidateQueries({ queryKey: ['pilotos'] });
             queryClient.invalidateQueries({ queryKey: ['escuderia'] });
+            queryClient.invalidateQueries({ queryKey: ['traspasos'] });
         },
         onError: (err: any) => {
             // Siempre mostramos el mensaje estandarizado en el modal para evitar Alerts
@@ -160,6 +161,7 @@ export function useMercado() {
             queryClient.invalidateQueries({ queryKey: ['partida'] });
             queryClient.invalidateQueries({ queryKey: ['pilotos'] });
             queryClient.invalidateQueries({ queryKey: ['escuderia'] });
+            queryClient.invalidateQueries({ queryKey: ['traspasos'] });
         }
     });
 

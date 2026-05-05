@@ -100,3 +100,18 @@ export const obtenerPilotosBloqueados = async (partidaId: number): Promise<numbe
         return [];
     }
 }
+
+/**
+ * Obtener listado de traspasos aceptados como historial de traspasos
+ * @param {number} partidaId - ID de la partida.
+ * @returns {Promise<OfertaPiloto[]>} Lista de ofertas aceptadas.
+ */
+export const obtenerTraspasosAceptados = async (partidaId: number): Promise<OfertaPiloto[]> => {
+    try {
+        const { data } = await api.get<OfertaPiloto[]>(`traspasos/aceptadas/${partidaId}`);
+        return mapOfertasFromDTO(data);
+    } catch (error) {
+        console.log('[API] Error al obtener traspasos aceptados:', error);
+        return [];
+    }
+}

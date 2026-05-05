@@ -21,6 +21,7 @@ export function useGestionarOferta() {
             queryClient.invalidateQueries({ queryKey: ['partida'] });
             queryClient.invalidateQueries({ queryKey: ['pilotos'] });
             queryClient.invalidateQueries({ queryKey: ['escuderia'] });
+            queryClient.invalidateQueries({ queryKey: ['traspasos'] });
         },
         onError: () => {
             Alert.alert("Error", "Error de conexión con el servidor.");
