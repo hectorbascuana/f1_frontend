@@ -62,6 +62,15 @@ export const PilotoCard: React.FC<PilotoCardProps> = ({
     return '#EF4444'; // Rojo
   };
 
+  const getPosicionColor = (pos: number) => {
+    switch (pos) {
+      case 1: return '#FFD700'; // Oro
+      case 2: return '#C0C0C0'; // Plata
+      case 3: return '#CD7F32'; // Bronce
+      default: return '#E10600'; // F1 Red
+    }
+  };
+
   return (
     <Animated.View 
       style={[
@@ -73,7 +82,12 @@ export const PilotoCard: React.FC<PilotoCardProps> = ({
       <View className="flex-row items-center">
         {/* Posición */}
         <View className="w-10 items-center justify-center">
-          <Text className="text-[#E10600] font-black text-xl italic">{piloto.posicion}º</Text>
+          <Text 
+            style={{ color: getPosicionColor(piloto.posicion) }}
+            className="font-black text-xl italic"
+          >
+            {piloto.posicion}º
+          </Text>
         </View>
 
         {/* Info Piloto */}

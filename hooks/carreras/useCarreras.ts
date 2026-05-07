@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Alert, BackHandler } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIniciarCarrera, useAvanzarVuelta } from '../../core/api/hooks/carrera/useCarreraSimulacion';
+import { useSiguienteCarrera } from '../../core/api/hooks/carrera/useCircuito';
 import { PilotoRankingDTO, Compuesto, VueltaRequestDTO } from '../../core/types/carreraDTO';
+import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * useCarreras.ts
@@ -22,6 +24,7 @@ export const useCarreras = (partidaId: number) => {
   const [ranking, setRanking] = useState<PilotoRankingDTO[]>([]);
   const [vueltaActual, setVueltaActual] = useState(0);
   const [totalVueltas, setTotalVueltas] = useState(0);
+  const [pilotosVisiblesCount, setPilotosVisiblesCount] = useState(0);
 
   // Estados de estrategia (Jugador)
   const [compuestosIniciales, setCompuestosIniciales] = useState<Record<number, Compuesto>>({});
@@ -31,13 +34,17 @@ export const useCarreras = (partidaId: number) => {
   // Hooks de API (TanStack Query)
   const { data: startData, isLoading: loadingStart, error: errorStart } = useIniciarCarrera(partidaId);
   const mutationVuelta = useAvanzarVuelta();
+  const mutationAvanzar = useSiguienteCarrera(partidaId);
+  const queryClient = useQueryClient();
 
   // Referencias para el bucle y cierres (stale closures)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const vueltaActualRef = useRef(0);
   const estrategiaRef = useRef({
     pitStops: {} as Record<number, boolean>,
     compuestos: {} as Record<number, Compuesto>
   });
+  const rankingRef = useRef<PilotoRankingDTO[]>([]);
 
   // Sincronizar refs con el estado para que el loop async siempre vea lo último
   useEffect(() => {
@@ -46,6 +53,10 @@ export const useCarreras = (partidaId: number) => {
       compuestos: compuestosSiguientes 
     };
   }, [pitStopsConfirmados, compuestosSiguientes]);
+
+  useEffect(() => {
+    rankingRef.current = ranking;
+  }, [ranking]);
 
   // Bloquear retroceso físico durante la carrera
   useEffect(() => {
@@ -61,7 +72,38 @@ export const useCarreras = (partidaId: number) => {
     return () => backHandler.remove();
   }, [fase]);
 
-  // Inicializar estrategia al recibir la parrilla (StartData)
+  // Lógica de revelación de parrilla con suspense
+  useEffect(() => {
+    if (startData && fase === 'PRECARRERA') {
+      setPilotosVisiblesCount(0);
+      let count = 0;
+      const total = startData.parrilla.length;
+      
+      const revealNext = () => {
+        if (count < total) {
+          count++;
+          setPilotosVisiblesCount(count);
+          
+          // La posición que estamos revelando (de atrás hacia adelante)
+          const currentPos = total - count + 1; 
+          
+          // Curva de delay: inicio pausado y ralentización progresiva hacia el P1
+          let delay = 600;                        // Base para el fondo de la parrilla
+          if (currentPos <= 15) delay = 750;      // Zona media
+          if (currentPos <= 10) delay = 900;      // Top 10
+          if (currentPos <= 5) delay = 1200;      // Top 5
+          if (currentPos <= 3) delay = 2000;      // Podium (Drama total)
+          
+          timeoutRef.current = setTimeout(revealNext, delay);
+        }
+      };
+      
+      const initialTimeout = setTimeout(revealNext, 1000);
+      return () => clearTimeout(initialTimeout);
+    }
+  }, [startData, fase]);
+
+  // Inicializar estrategia y UUID al recibir la parrilla
   useEffect(() => {
     if (startData) {
       setUuid(startData.uuid);
@@ -90,24 +132,29 @@ export const useCarreras = (partidaId: number) => {
   const ejecutarVuelta = useCallback(async (currentUuid: string) => {
     try {
       const { pitStops, compuestos } = estrategiaRef.current;
+      const currentRanking = rankingRef.current;
 
       // Identificar pilotos del jugador para el DTO de la vuelta
-      const pJugador = ranking.length > 0 
-        ? ranking.filter(p => p.esJugador).sort((a, b) => a.pilotoId - b.pilotoId)
+      const pJugador = currentRanking.length > 0 
+        ? currentRanking.filter(p => p.esJugador).sort((a, b) => a.pilotoId - b.pilotoId)
         : startData?.parrilla.filter(p => p.esJugador).sort((a, b) => a.pilotoId - b.pilotoId) || [];
 
       const body: VueltaRequestDTO = {
-        pitStopPiloto1: pJugador[0] ? (ranking.length > 0 && !!pitStops[pJugador[0].pilotoId]) : false,
-        nuevoCompuestoPiloto1: pJugador[0] ? (ranking.length === 0 ? compuestosIniciales[pJugador[0].pilotoId] : (compuestos[pJugador[0].pilotoId] || null)) : null,
-        pitStopPiloto2: pJugador[1] ? (ranking.length > 0 && !!pitStops[pJugador[1].pilotoId]) : false,
-        nuevoCompuestoPiloto2: pJugador[1] ? (ranking.length === 0 ? compuestosIniciales[pJugador[1].pilotoId] : (compuestos[pJugador[1].pilotoId] || null)) : null,
+        pitStopPiloto1: pJugador[0] ? (currentRanking.length > 0 && !!pitStops[pJugador[0].pilotoId]) : false,
+        nuevoCompuestoPiloto1: pJugador[0] ? (currentRanking.length === 0 ? compuestosIniciales[pJugador[0].pilotoId] : (compuestos[pJugador[0].pilotoId] || null)) : null,
+        pitStopPiloto2: pJugador[1] ? (currentRanking.length > 0 && !!pitStops[pJugador[1].pilotoId]) : false,
+        nuevoCompuestoPiloto2: pJugador[1] ? (currentRanking.length === 0 ? compuestosIniciales[pJugador[1].pilotoId] : (compuestos[pJugador[1].pilotoId] || null)) : null,
       };
+
+      console.log(`[LOOP] Enviando telemetría Vuelta ${vueltaActualRef.current + 1}:`, JSON.stringify(body));
 
       const res = await mutationVuelta.mutateAsync({ uuid: currentUuid, body });
 
       // Actualizar ranking y telemetría
-      setRanking([...res.ranking].sort((a, b) => a.posicion - b.posicion));
+      const sortedRanking = [...res.ranking].sort((a, b) => a.posicion - b.posicion);
+      setRanking(sortedRanking);
       setVueltaActual(res.vueltaActual);
+      vueltaActualRef.current = res.vueltaActual;
       setTotalVueltas(res.totalVueltas);
 
       // Resetear flags de pit stop confirmados si ya se están ejecutando
@@ -129,7 +176,7 @@ export const useCarreras = (partidaId: number) => {
       // Reintento tras error de red
       timeoutRef.current = setTimeout(() => ejecutarVuelta(currentUuid), 5000);
     }
-  }, [ranking, startData, compuestosIniciales, mutationVuelta]);
+  }, [startData, compuestosIniciales, mutationVuelta]);
 
   /**
    * handleStartRace
@@ -148,9 +195,30 @@ export const useCarreras = (partidaId: number) => {
    * Registro de decisión de parada en boxes del jugador.
    */
   const handleConfirmPitStop = (pilotoId: number) => {
+    console.log(`[HUD] Solicitando BOXES para pilotoId: ${pilotoId}`);
     setPitStopsConfirmados(prev => ({ ...prev, [pilotoId]: true }));
     if (!compuestosSiguientes[pilotoId]) {
       setCompuestosSiguientes(prev => ({ ...prev, [pilotoId]: 'MEDIO' }));
+    }
+  };
+
+  /**
+   * handleFinishAndExit
+   * 
+   * Avanza la carrera en el backend y vuelve a la pantalla de gestión.
+   */
+  const handleFinishAndExit = async () => {
+    try {
+      await mutationAvanzar.mutateAsync();
+      
+      // Invalidamos las queries para que al volver, la info esté actualizada
+      queryClient.invalidateQueries({ queryKey: ['partida'] });
+      queryClient.invalidateQueries({ queryKey: ['calendario'] });
+      
+      router.replace(`/(partidas)/${partidaId}` as any);
+    } catch (err) {
+      console.error("Error al finalizar carrera:", err);
+      Alert.alert("Error", "No se ha podido procesar el avance de la temporada.");
     }
   };
 
@@ -183,8 +251,10 @@ export const useCarreras = (partidaId: number) => {
     compuestosIniciales,
     compuestosSiguientes,
     pitStopsConfirmados,
+    pilotosVisiblesCount,
     handleStartRace,
     handleConfirmPitStop,
+    handleFinishAndExit,
     setCompuestoSeleccionado,
     setCompuestoInicial
   };

@@ -1,6 +1,7 @@
-import { circuito } from '@/core/api/action/circuitos.action';
-import { useQuery } from '@tanstack/react-query';
+import { circuito, siguienteCarrera } from '@/core/api/action/circuitos.action';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Circuito } from '../../../../types/circuito';
+import { PartidaDTO } from '@/core/types/partidaDTO';
 
 /**
  * Hook useCircuito
@@ -16,4 +17,10 @@ export const useCircuito = (identity: number) => {
         queryFn: () => circuito(identity),
         enabled: !!identity, // Solo se ejecuta si tenemos un ID
     });
+};  
+
+export const useSiguienteCarrera = (partida_id: number) => {
+  return useMutation<PartidaDTO>({
+    mutationFn: () => siguienteCarrera(partida_id),
+  });
 };

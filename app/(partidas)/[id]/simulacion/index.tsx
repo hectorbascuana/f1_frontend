@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useRef } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PilotoCard } from '../../../../components/carrera/PilotoCard';
@@ -30,11 +30,29 @@ export default function CarreraSimulacionScreen() {
     compuestosIniciales,
     compuestosSiguientes,
     pitStopsConfirmados,
+    pilotosVisiblesCount,
     handleStartRace,
     handleConfirmPitStop,
+    handleFinishAndExit,
     setCompuestoSeleccionado,
     setCompuestoInicial
   } = useCarreras(partidaId);
+
+  const scrollRef = useRef<ScrollView>(null);
+
+  // Auto-scroll al revelar pilotos en parrilla
+  React.useEffect(() => {
+    if (fase === 'PRECARRERA' && startData) {
+      const total = startData.parrilla.length;
+      const currentPosRevealed = total - pilotosVisiblesCount + 1;
+      
+      // Scroll suave hacia el piloto recién revelado
+      scrollRef.current?.scrollTo({ 
+        y: Math.max(0, (currentPosRevealed - 1) * 90 - 100), 
+        animated: true 
+      });
+    }
+  }, [pilotosVisiblesCount, fase, startData]);
 
   if (loadingStart) {
     return (
@@ -58,9 +76,17 @@ export default function CarreraSimulacionScreen() {
             {fase === 'ACTIVA' ? `VUELTA ${vueltaActual} / ${totalVueltas}` : 'GP SIMULACIÓN'}
           </Text>
         </View>
+        {fase === 'PRECARRERA' && (
+          <TouchableOpacity 
+            onPress={handleStartRace}
+            className="bg-[#E10600] px-4 py-2 rounded-lg"
+          >
+            <Text className="text-white font-black italic text-[12px]">START</Text>
+          </TouchableOpacity>
+        )}
         {fase === 'FINALIZADA' && (
           <TouchableOpacity 
-            onPress={() => router.back()}
+            onPress={handleFinishAndExit}
             className="bg-[#E10600] px-4 py-2 rounded-lg"
           >
             <Text className="text-white font-bold">SALIR</Text>
@@ -69,43 +95,55 @@ export default function CarreraSimulacionScreen() {
       </View>
 
       <ScrollView 
+        ref={scrollRef}
         className="flex-1 px-4 mt-4" 
-        contentContainerStyle={{ paddingBottom: 160 }}
+        contentContainerStyle={{ 
+          paddingBottom: (fase === 'ACTIVA' || (fase === 'PRECARRERA' && pilotosVisiblesCount === startData?.parrilla.length)) ? 160 : 40 
+        }}
       >
         <View style={{ height: (fase === 'PRECARRERA' ? startData?.parrilla.length || 0 : ranking.length) * 90 }}>
           
-          {/* FASE 1: Parrilla de Salida */}
-          {fase === 'PRECARRERA' && startData?.parrilla.map((p, index) => (
-            <View 
-              key={p.pilotoId} 
-              className="bg-[#121212] border border-[#222] rounded-2xl p-4 mb-3 flex-row items-center"
-              style={{ position: 'absolute', top: index * 90, left: 0, right: 0 }}
-            >
-              <Text className="text-[#E10600] font-black text-xl italic w-10 text-center">{p.posicion}º</Text>
-              <View className="flex-1 ml-2">
-                <Text className="text-white font-black text-base">{p.nombre.toUpperCase()}</Text>
-                <View className="flex-row items-center mt-1">
-                  <Ionicons name="help-circle" size={14} color="#555" />
-                  <Text className="text-[#555] text-[10px] font-bold ml-1">Estrategia Oculta</Text>
-                </View>
-              </View>
-              {p.esJugador && (
-                <View className="flex-row bg-black p-1 rounded-lg">
-                  {(['BLANDO', 'MEDIO', 'DURO'] as Compuesto[]).map(c => (
-                    <TouchableOpacity 
-                      key={c}
-                      onPress={() => setCompuestoInicial(p.pilotoId, c)}
-                      className={`px-3 py-1 rounded ${compuestosIniciales[p.pilotoId] === c ? 'bg-[#333]' : ''}`}
-                    >
-                      <Text className={`text-[9px] font-black ${compuestosIniciales[p.pilotoId] === c ? 'text-white' : 'text-[#555]'}`}>
-                        {c.charAt(0)}
+          {/* FASE 1: Parrilla de Salida (Revelación con suspense) */}
+          {fase === 'PRECARRERA' && startData?.parrilla
+            .filter(p => p.posicion >= (startData.parrilla.length - pilotosVisiblesCount + 1))
+            .map((p) => {
+              const isFirst3 = p.posicion <= 3;
+              const podiumColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
+
+              return (
+                <View 
+                  key={p.pilotoId} 
+                  className={`bg-[#121212] border-2 ${p.esJugador ? 'border-[#E10600]' : 'border-[#222]'} rounded-2xl p-4 mb-3 flex-row items-center`}
+                  style={{ position: 'absolute', top: (p.posicion - 1) * 90, left: 0, right: 0 }}
+                >
+                  <Text 
+                    style={{ color: isFirst3 ? podiumColors[p.posicion - 1] : '#E10600' }} 
+                    className="font-black text-xl italic w-10 text-center"
+                  >
+                    {p.posicion}º
+                  </Text>
+                  <View className="flex-1 ml-2">
+                    <Text className="text-white font-black text-base">{p.nombre.toUpperCase()}</Text>
+                    <View className="flex-row items-center">
+                      <Text className="text-[#555] text-[10px] font-bold">{p.escuderia.toUpperCase()}</Text>
+                      <View className="w-1 h-1 bg-[#444] rounded-full mx-1.5" />
+                      <Text 
+                        style={{ color: (p as any).dnf ? '#EF4444' : '#888' }} 
+                        className="text-[10px] font-bold uppercase italic"
+                      >
+                        {(p as any).dnf ? 'DNF' : (p.posicion === 1 ? 'Leader' : `+${((p.tiempoClasificacionMs - (startData?.parrilla[0]?.tiempoClasificacionMs || 0)) / 1000).toFixed(3)}s`)}
                       </Text>
-                    </TouchableOpacity>
-                  ))}
+                    </View>
+                  </View>
+                  {p.esJugador && (
+                    <View className="bg-[#E10600]/10 px-2 py-1 rounded">
+                      <Text className="text-[#E10600] text-[8px] font-black uppercase">Tu Piloto</Text>
+                    </View>
+                  )}
                 </View>
-              )}
-            </View>
-          ))}
+              );
+            })
+          }
 
           {/* FASE 2 y 3: Carrera Activa / Finalizada */}
           {fase !== 'PRECARRERA' && ranking.map((p, index) => (
@@ -120,26 +158,24 @@ export default function CarreraSimulacionScreen() {
       </ScrollView>
 
       {/* HUD Persistente del Jugador */}
+      {/* HUD Persistente del Jugador */}
       {fase === 'ACTIVA' && (
         <PlayerHUD 
           pilotos={ranking.filter(p => p.esJugador).sort((a, b) => a.pilotoId - b.pilotoId)}
-          compuestosSiguientes={compuestosSiguientes}
+          compuestos={compuestosSiguientes}
           pitStopsConfirmados={pitStopsConfirmados}
           onSelectCompuesto={setCompuestoSeleccionado}
           onConfirmPitStop={handleConfirmPitStop}
         />
       )}
 
-      {/* Botón de Inicio (Solo en Parrilla) */}
-      {fase === 'PRECARRERA' && (
-        <View className="absolute bottom-10 left-10 right-10">
-          <TouchableOpacity 
-            onPress={handleStartRace}
-            className="bg-[#E10600] py-5 rounded-2xl items-center shadow-2xl active:opacity-90"
-          >
-            <Text className="text-white text-xl font-black italic uppercase tracking-[2px]">¡Semáforos fuera!</Text>
-          </TouchableOpacity>
-        </View>
+      {fase === 'PRECARRERA' && pilotosVisiblesCount === startData?.parrilla.length && (
+        <PlayerHUD 
+          pilotos={startData?.parrilla.filter(p => p.esJugador).sort((a, b) => a.pilotoId - b.pilotoId) || []}
+          compuestos={compuestosIniciales}
+          onSelectCompuesto={setCompuestoInicial}
+          isGrid
+        />
       )}
     </SafeAreaView>
   );

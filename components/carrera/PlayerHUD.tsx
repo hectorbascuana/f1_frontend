@@ -11,19 +11,21 @@ import { PilotoRankingDTO, Compuesto } from '../../core/types/carreraDTO';
  */
 
 interface PlayerHUDProps {
-  pilotos: PilotoRankingDTO[];
-  compuestosSiguientes: Record<number, Compuesto>;
-  pitStopsConfirmados: Record<number, boolean>;
+  pilotos: any[]; // Puede ser PilotoRankingDTO o ParrillaEntryDTO
+  compuestos: Record<number, Compuesto>;
+  pitStopsConfirmados?: Record<number, boolean>;
   onSelectCompuesto: (pilotoId: number, c: Compuesto) => void;
-  onConfirmPitStop: (pilotoId: number) => void;
+  onConfirmPitStop?: (pilotoId: number) => void;
+  isGrid?: boolean;
 }
 
 export const PlayerHUD: React.FC<PlayerHUDProps> = ({
   pilotos,
-  compuestosSiguientes,
-  pitStopsConfirmados,
+  compuestos,
+  pitStopsConfirmados = {},
   onSelectCompuesto,
   onConfirmPitStop,
+  isGrid = false,
 }) => {
   if (pilotos.length === 0) return null;
 
@@ -36,64 +38,88 @@ export const PlayerHUD: React.FC<PlayerHUDProps> = ({
     }
   };
 
-  const getDesgasteColor = (d: number) => {
-    if (d < 40) return '#22C55E';
-    if (d < 75) return '#FACC15';
-    return '#EF4444';
+  const getPosicionColor = (pos: number) => {
+    switch (pos) {
+      case 1: return '#FFD700';
+      case 2: return '#C0C0C0';
+      case 3: return '#CD7F32';
+      default: return '#E10600';
+    }
   };
 
   return (
     <View className="absolute bottom-0 left-0 right-0 bg-[#0f0f0f]/95 border-t-2 border-[#E10600]/30 p-4 pt-3 flex-row justify-between shadow-2xl">
       {pilotos.map((p, idx) => {
-        const nextComp = compuestosSiguientes[p.pilotoId] || 'MEDIO';
+        const nextComp = compuestos[p.pilotoId] || 'MEDIO';
         const isConfirmed = !!pitStopsConfirmados[p.pilotoId];
         
         return (
-          <View key={p.pilotoId} className={`w-[48.5%] ${idx === 0 ? 'border-r border-[#333] pr-3' : 'pl-1'}`}>
-            {/* Cabecera Piloto */}
-            <View className="flex-row justify-between items-center mb-2">
-              <View className="flex-row items-center">
-                <View className="bg-[#E10600] w-1.5 h-3 mr-1.5 rounded-full" />
-                <Text className="text-white font-black text-[11px] uppercase" numberOfLines={1}>{p.nombre.split(' ').pop()}</Text>
+          <View 
+            key={p.pilotoId} 
+            className={`w-[48.5%] ${idx === 0 ? 'border-r border-[#333] pr-3' : 'pl-3'}`}
+            style={{ opacity: p.dnf ? 0.3 : 1 }}
+          >
+            {/* Overlay RETIRED */}
+            {p.dnf && (
+              <View className="absolute inset-0 z-10 items-center justify-center">
+                <Text className="text-red-500 font-black italic text-[10px] tracking-[2px] bg-black/60 px-2 py-0.5 rounded border border-red-500/50">RETIRED</Text>
               </View>
-              <Text className="text-[#E10600] font-black text-[12px] italic">{p.posicion}º</Text>
+            )}
+
+            {/* Cabecera Piloto */}
+            <View className={`flex-row justify-between items-center mb-3 ${idx === 0 ? 'flex-row-reverse' : ''}`}>
+              <View className={`flex-row items-center ${idx === 0 ? 'flex-row-reverse' : ''}`}>
+                <View className={`bg-[#E10600] w-2 h-4 rounded-full ${idx === 0 ? 'ml-2' : 'mr-2'}`} />
+                <Text className="text-white font-black text-[13px] uppercase" numberOfLines={1}>{p.nombre.split(' ').pop()}</Text>
+              </View>
+              <Text style={{ color: getPosicionColor(p.posicion) }} className="font-black text-[14px] italic">{p.posicion}º</Text>
             </View>
 
-            {/* Telemetría rápida */}
-            <View className="flex-row justify-between items-center mb-2">
-               <View className="flex-row items-center">
-                  <Ionicons name="speedometer-outline" size={10} color="#888" />
-                  <Text className="text-[#888] text-[9px] font-bold ml-1">{Math.round(p.desgaste)}%</Text>
-               </View>
-               <Text className="text-[#555] text-[9px] font-bold">GAP: {p.gapMs === 0 ? 'LDR' : `${(p.gapMs/1000).toFixed(1)}s`}</Text>
-            </View>
+            {/* Telemetría rápida (Oculta en Parrilla) */}
+            {!isGrid && (
+              <View className={`flex-row justify-between items-center mb-3 ${idx === 0 ? 'flex-row-reverse' : ''}`}>
+                <View className={`flex-row items-center ${idx === 0 ? 'flex-row-reverse' : ''}`}>
+                    <Ionicons name="speedometer-outline" size={12} color="#888" />
+                    <Text className={`text-[#888] text-[10px] font-bold ${idx === 0 ? 'mr-1.5' : 'ml-1.5'}`}>{Math.round(p.desgaste || 0)}%</Text>
+                </View>
+                <Text className="text-[#555] text-[10px] font-bold italic">GAP: {p.gapMs === 0 ? 'LDR' : `${(p.gapMs/1000).toFixed(1)}s`}</Text>
+              </View>
+            )}
 
-            {/* Selector Mini y Botón */}
-            <View className="flex-row items-center justify-between">
-               <View className="flex-row bg-black p-0.5 rounded border border-[#222]">
-                  {(['B', 'M', 'D'] as const).map((letter, i) => {
+            {/* Selector y Botón (MÁS GRANDES) */}
+            <View className={`flex-row items-center justify-between ${idx === 0 ? 'flex-row-reverse' : ''}`}>
+               <View className={`flex-row bg-black p-1 rounded-xl border border-[#222] ${isGrid ? 'p-1.5' : ''}`}>
+                  {(['S', 'M', 'H'] as const).map((letter, i) => {
                     const c = i === 0 ? 'BLANDO' : i === 1 ? 'MEDIO' : 'DURO';
                     const isSel = nextComp === c;
+                    const cColor = getCompuestoColor(c as Compuesto);
                     return (
                       <TouchableOpacity 
                         key={c}
                         onPress={() => onSelectCompuesto(p.pilotoId, c as Compuesto)}
                         disabled={isConfirmed || p.dnf || p.enPitStop}
-                        className={`w-5 h-5 items-center justify-center rounded ${isSel ? 'bg-[#333]' : ''}`}
+                        className={`${isGrid ? 'w-10 h-10' : 'w-7 h-7'} items-center justify-center rounded-lg ${isSel ? 'bg-white/5 border' : ''}`}
+                        style={isSel ? { borderColor: `${cColor}66` } : {}}
                       >
-                        <Text style={{ color: isSel ? getCompuestoColor(c as Compuesto) : '#444' }} className="text-[8px] font-black">{letter}</Text>
+                        <Text style={{ color: isSel ? cColor : '#555' }} className={`${isGrid ? 'text-[14px]' : 'text-[11px]'} font-black`}>{letter}</Text>
                       </TouchableOpacity>
                     );
                   })}
                </View>
 
-               <TouchableOpacity 
-                onPress={() => onConfirmPitStop(p.pilotoId)}
-                disabled={isConfirmed || p.dnf || p.enPitStop}
-                className={`p-1.5 rounded border ${isConfirmed ? 'bg-orange-500/20 border-orange-500' : 'bg-[#E10600]/10 border-[#E10600]/40'}`}
-               >
-                 <Ionicons name={isConfirmed ? "checkmark-circle" : "construct-outline"} size={14} color={isConfirmed ? "#F97316" : "#E10600"} />
-               </TouchableOpacity>
+               {!isGrid && onConfirmPitStop && (
+                 <TouchableOpacity 
+                  onPress={() => onConfirmPitStop(p.pilotoId)}
+                  disabled={isConfirmed || p.dnf || p.enPitStop}
+                  className={`p-3 rounded-xl border-2 ${isConfirmed ? 'bg-orange-500/20 border-orange-500 shadow-lg shadow-orange-500/20' : 'bg-[#E10600]/10 border-[#E10600]/40'}`}
+                 >
+                   <Ionicons 
+                    name={isConfirmed ? "checkmark-circle" : "construct-outline"} 
+                    size={20} 
+                    color={isConfirmed ? "#F97316" : "#E10600"} 
+                   />
+                 </TouchableOpacity>
+               )}
             </View>
           </View>
         );

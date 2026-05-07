@@ -29,6 +29,7 @@ export const iniciarCarrera = async (partidaId: number): Promise<StartCarreraDTO
  */
 export const avanzarVuelta = async (uuid: string, body: VueltaRequestDTO): Promise<VueltaResponseDTO> => {
   try {
+    console.log(`[API] POST /carrera/vuelta/${uuid} | Body:`, JSON.stringify(body));
     const { data } = await api.post<VueltaResponseDTO>(`carrera/vuelta/${uuid}`, body);
     return data;
   } catch (error: any) {
