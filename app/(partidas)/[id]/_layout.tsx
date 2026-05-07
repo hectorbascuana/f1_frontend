@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { Tabs, useSegments } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 import PartidaHeader from '../../../components/partidas/PartidaHeader';
@@ -11,9 +11,16 @@ import PartidaHeader from '../../../components/partidas/PartidaHeader';
  * 4 Secciones principales: Siguiente Carrera, Mejoras Técnicas, Pilotos y Clasificación.
  */
 export default function PartidaLayout() {
+  const segments = useSegments() as string[];
+  
+  // Detectar si estamos en la pantalla de simulación
+  const isSimulacion = segments.includes('simulacion');
+
   return (
     <View className="flex-1">
-      <PartidaHeader />
+      {/* Ocultar el header persistente si estamos simulando carrera */}
+      {!isSimulacion && <PartidaHeader />}
+      
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: '#E10600',
@@ -22,6 +29,7 @@ export default function PartidaLayout() {
             backgroundColor: '#0c0c0c',
             borderTopColor: '#222',
             paddingTop: 5,
+            display: isSimulacion ? 'none' : 'flex', // Ocultar menú tabs
           },
           tabBarLabelStyle: {
             fontSize: 10,
@@ -94,6 +102,15 @@ export default function PartidaLayout() {
           name="pilotos/mercado"
           options={{
             href: null,
+          }}
+        />
+
+        {/* Ruta de Simulación: Oculta de las Tabs y sin menú inferior */}
+        <Tabs.Screen
+          name="simulacion/index"
+          options={{
+            href: null,
+            tabBarStyle: { display: 'none' },
           }}
         />
       </Tabs>

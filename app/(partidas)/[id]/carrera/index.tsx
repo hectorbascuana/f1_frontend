@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ESCUDERIAS_DATA } from '../../../../constants/EscuderiasData';
 import { getTeamImage } from '../../../../constants/TeamAssets';
 import { useCircuito } from '../../../../core/api/hooks/carrera/useCircuito';
@@ -36,6 +37,8 @@ const MOCK_DRIVERS = [
 
 export default function GameDashboard() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { id } = useLocalSearchParams();
   const { partida, isLoading: loadingPartida } = useActiveGame();
   const { data: todosLosCircuitos, isLoading: loadingTodos } = useCircuitos();
 
@@ -232,6 +235,7 @@ export default function GameDashboard() {
       <View className="mt-auto mb-6">
         {esSiguienteCarrera && (
           <TouchableOpacity
+            onPress={() => router.push(`/(partidas)/${id}/simulacion` as any)}
             className="bg-[#E10600] rounded-[22px] py-5 flex-row items-center justify-center shadow-xl active:opacity-90"
             activeOpacity={0.8}
           >
