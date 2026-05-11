@@ -28,6 +28,8 @@ const EmptyStandings = () => (
  * Muestra el Mundial de Pilotos y Constructores con un diseño premium.
  * Incluye un selector de pestañas para alternar entre ambas clasificaciones.
  */
+import PartidaHeader from '@/components/partidas/PartidaHeader';
+
 export default function ClasificacionScreen() {
     const [activeTab, setActiveTab] = useState<'pilotos' | 'constructores'>('pilotos');
     const { partida, isLoading: loadingGame } = useActiveGame();
@@ -53,6 +55,7 @@ export default function ClasificacionScreen() {
 
     return (
         <View className="flex-1 bg-[#0a0a0a]">
+            <PartidaHeader />
             {/* Cabecera de la Sección */}
             <View className="pt-8 pb-4 px-6 bg-[#0c0c0c] border-b border-[#1a1a1a]">
                 <Text className="text-[#E10600] text-[10px] font-black uppercase tracking-[4px] mb-1">Standings</Text>

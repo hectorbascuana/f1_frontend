@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { PilotoRankingDTO, Compuesto } from '../../core/types/carreraDTO';
+import React from 'react';
+import { Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Compuesto } from '../../core/types/carreraDTO';
 
 /**
  * PlayerHUD.tsx
@@ -19,7 +19,7 @@ interface PlayerHUDProps {
   isGrid?: boolean;
 }
 
-export const PlayerHUD: React.FC<PlayerHUDProps> = ({
+export const PlayerHUD = React.memo<PlayerHUDProps>(({
   pilotos,
   compuestos,
   pitStopsConfirmados = {},
@@ -27,6 +27,12 @@ export const PlayerHUD: React.FC<PlayerHUDProps> = ({
   onConfirmPitStop,
   isGrid = false,
 }) => {
+  console.log('[PlayerHUD] Renderizado con:', {
+    pilotosCount: pilotos.length,
+    hasOnConfirm: !!onConfirmPitStop,
+    isGrid
+  });
+
   if (pilotos.length === 0) return null;
 
   const getCompuestoColor = (c: Compuesto) => {
@@ -52,10 +58,12 @@ export const PlayerHUD: React.FC<PlayerHUDProps> = ({
       {pilotos.map((p, idx) => {
         const nextComp = compuestos[p.pilotoId] || 'MEDIO';
         const isConfirmed = !!pitStopsConfirmados[p.pilotoId];
-        
+
+        console.log(`[PlayerHUD] Renderizando piloto ${p.pilotoId}, isConfirmed: ${isConfirmed}`);
+
         return (
-          <View 
-            key={p.pilotoId} 
+          <View
+            key={p.pilotoId}
             className={`w-[48.5%] ${idx === 0 ? 'border-r border-[#333] pr-3' : 'pl-3'}`}
             style={{ opacity: p.dnf ? 0.3 : 1 }}
           >
@@ -79,51 +87,53 @@ export const PlayerHUD: React.FC<PlayerHUDProps> = ({
             {!isGrid && (
               <View className={`flex-row justify-between items-center mb-3 ${idx === 0 ? 'flex-row-reverse' : ''}`}>
                 <View className={`flex-row items-center ${idx === 0 ? 'flex-row-reverse' : ''}`}>
-                    <Ionicons name="speedometer-outline" size={12} color="#888" />
-                    <Text className={`text-[#888] text-[10px] font-bold ${idx === 0 ? 'mr-1.5' : 'ml-1.5'}`}>{Math.round(p.desgaste || 0)}%</Text>
+                  <Ionicons name="speedometer-outline" size={12} color="#888" />
+                  <Text className={`text-[#888] text-[10px] font-bold ${idx === 0 ? 'mr-1.5' : 'ml-1.5'}`}>{Math.round(p.desgaste || 0)}%</Text>
                 </View>
-                <Text className="text-[#555] text-[10px] font-bold italic">GAP: {p.gapMs === 0 ? 'LDR' : `${(p.gapMs/1000).toFixed(1)}s`}</Text>
+                <Text className="text-[#555] text-[10px] font-bold italic">GAP: {p.gapMs === 0 ? 'LDR' : `${(p.gapMs / 1000).toFixed(1)}s`}</Text>
               </View>
             )}
 
             {/* Selector y Botón (MÁS GRANDES) */}
             <View className={`flex-row items-center justify-between ${idx === 0 ? 'flex-row-reverse' : ''}`}>
-               <View className={`flex-row bg-black p-1 rounded-xl border border-[#222] ${isGrid ? 'p-1.5' : ''}`}>
-                  {(['S', 'M', 'H'] as const).map((letter, i) => {
-                    const c = i === 0 ? 'BLANDO' : i === 1 ? 'MEDIO' : 'DURO';
-                    const isSel = nextComp === c;
-                    const cColor = getCompuestoColor(c as Compuesto);
-                    return (
-                      <TouchableOpacity 
-                        key={c}
-                        onPress={() => onSelectCompuesto(p.pilotoId, c as Compuesto)}
-                        disabled={isConfirmed || p.dnf || p.enPitStop}
-                        className={`${isGrid ? 'w-10 h-10' : 'w-7 h-7'} items-center justify-center rounded-lg ${isSel ? 'bg-white/5 border' : ''}`}
-                        style={isSel ? { borderColor: `${cColor}66` } : {}}
-                      >
-                        <Text style={{ color: isSel ? cColor : '#555' }} className={`${isGrid ? 'text-[14px]' : 'text-[11px]'} font-black`}>{letter}</Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-               </View>
+              <View className={`flex-row bg-black p-1 rounded-xl border border-[#222] ${isGrid ? 'p-1.5' : ''}`}>
+                {(['S', 'M', 'H'] as const).map((letter, i) => {
+                  const c = i === 0 ? 'BLANDO' : i === 1 ? 'MEDIO' : 'DURO';
+                  const isSel = nextComp === c;
+                  const cColor = getCompuestoColor(c as Compuesto);
+                  return (
+                    <TouchableOpacity
+                      key={c}
+                      onPress={() => onSelectCompuesto(p.pilotoId, c as Compuesto)}
+                      disabled={isConfirmed || p.dnf || p.enPitStop}
+                      className={`${isGrid ? 'w-10 h-10' : 'w-7 h-7'} items-center justify-center rounded-lg ${isSel ? 'bg-white/5 border' : ''}`}
+                      style={isSel ? { borderColor: `${cColor}66` } : {}}
+                    >
+                      <Text style={{ color: isSel ? cColor : '#555' }} className={`${isGrid ? 'text-[14px]' : 'text-[11px]'} font-black`}>{letter}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
 
-               {!isGrid && onConfirmPitStop && (
-                 <TouchableOpacity 
-                  onPress={() => onConfirmPitStop(p.pilotoId)}
-                  disabled={isConfirmed || p.dnf || p.enPitStop}
-                  className={`p-3 rounded-xl border-2 ${isConfirmed ? 'bg-orange-500/20 border-orange-500 shadow-lg shadow-orange-500/20' : 'bg-[#E10600]/10 border-[#E10600]/40'}`}
-                 >
-                   <Ionicons 
-                    name={isConfirmed ? "checkmark-circle" : "construct-outline"} 
-                    size={20} 
-                    color={isConfirmed ? "#F97316" : "#E10600"} 
-                   />
-                 </TouchableOpacity>
-               )}
+              <Pressable
+                onPress={() => {
+                  if (onConfirmPitStop && !isConfirmed && !p.dnf && !p.enPitStop) {
+                    onConfirmPitStop(p.pilotoId);
+                  }
+                }}
+                disabled={isConfirmed || p.dnf || p.enPitStop}
+                className={`p-2 rounded-xl ${isConfirmed ? 'bg-orange-500/20 border border-orange-500' : 'bg-black border border-gray-700'}`}
+              >
+                <Ionicons
+                  name={isConfirmed ? "checkmark-circle" : "construct-outline"}
+                  size={20}
+                  color={isConfirmed ? "#F97316" : "#E10600"}
+                />
+              </Pressable>
             </View>
           </View>
         );
       })}
     </View>
   );
-};
+});

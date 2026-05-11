@@ -3,11 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ESCUDERIAS_DATA } from '../../../../constants/EscuderiasData';
-import { getTeamImage } from '../../../../constants/TeamAssets';
-import { useCircuito } from '../../../../core/api/hooks/carrera/useCircuito';
-import { useCircuitos } from '../../../../core/api/hooks/carrera/useCircuitos';
-import { useActiveGame } from '../../../../hooks/store/useActiveGame';
+import { ESCUDERIAS_DATA } from '../../../../../constants/EscuderiasData';
+import { getTeamImage } from '../../../../../constants/TeamAssets';
+import { useCircuito } from '../../../../../core/api/hooks/carrera/useCircuito';
+import { useCircuitos } from '../../../../../core/api/hooks/carrera/useCircuitos';
+import { useActiveGame } from '../../../../../hooks/store/useActiveGame';
+import PartidaHeader from '../../../../../components/partidas/PartidaHeader';
 
 // Datos de pilotos para la clasificación de ejemplo
 const MOCK_DRIVERS = [
@@ -76,7 +77,9 @@ export default function GameDashboard() {
   };
 
   return (
-    <View className="flex-1 bg-[#0a0a0a] px-6">
+    <View className="flex-1 bg-[#0a0a0a]">
+      <PartidaHeader />
+      <View className="flex-1 px-6">
 
       {/* Sección 1: Cabecera con Selector */}
       <View className="pt-2 mb-2">
@@ -363,6 +366,7 @@ export default function GameDashboard() {
           />
         </View>
       </Modal>
+      </View>
     </View>
   );
 }

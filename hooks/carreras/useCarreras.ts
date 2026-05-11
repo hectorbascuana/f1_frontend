@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Alert, BackHandler } from 'react-native';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { useIniciarCarrera, useAvanzarVuelta } from '../../core/api/hooks/carrera/useCarreraSimulacion';
 import { useSiguienteCarrera } from '../../core/api/hooks/carrera/useCircuito';
 import { PilotoRankingDTO, Compuesto, VueltaRequestDTO } from '../../core/types/carreraDTO';
@@ -16,7 +16,6 @@ import { useQueryClient } from '@tanstack/react-query';
 type FaseCarrera = 'PRECARRERA' | 'ACTIVA' | 'FINALIZADA';
 
 export const useCarreras = (partidaId: number) => {
-  const router = useRouter();
 
   // Estados de fase y datos
   const [fase, setFase] = useState<FaseCarrera>('PRECARRERA');
@@ -183,31 +182,37 @@ export const useCarreras = (partidaId: number) => {
    * 
    * Transición de parrilla a carrera activa.
    */
-  const handleStartRace = () => {
+  const handleStartRace = useCallback(() => {
     if (!uuid) return;
     setFase('ACTIVA');
     ejecutarVuelta(uuid);
-  };
+  }, [uuid, ejecutarVuelta]);
 
   /**
    * handleConfirmPitStop
    * 
    * Registro de decisión de parada en boxes del jugador.
    */
-  const handleConfirmPitStop = (pilotoId: number) => {
-    console.log(`[HUD] Solicitando BOXES para pilotoId: ${pilotoId}`);
-    setPitStopsConfirmados(prev => ({ ...prev, [pilotoId]: true }));
-    if (!compuestosSiguientes[pilotoId]) {
-      setCompuestosSiguientes(prev => ({ ...prev, [pilotoId]: 'MEDIO' }));
-    }
-  };
+  const handleConfirmPitStop = useCallback((pilotoId: number) => {
+    console.log(`[useCarreras] Callback handleConfirmPitStop invocado para pilotoId: ${pilotoId}`);
+    setPitStopsConfirmados(prev => {
+        console.log('[useCarreras] Actualizando estado de pit stops confirmados:', { ...prev, [pilotoId]: true });
+        return { ...prev, [pilotoId]: true };
+    });
+    setCompuestosSiguientes(prev => {
+        if (!prev[pilotoId]) {
+            return { ...prev, [pilotoId]: 'MEDIO' };
+        }
+        return prev;
+    });
+  }, []);
 
   /**
    * handleFinishAndExit
    * 
    * Avanza la carrera en el backend y vuelve a la pantalla de gestión.
    */
-  const handleFinishAndExit = async () => {
+  const handleFinishAndExit = useCallback(async () => {
     try {
       await mutationAvanzar.mutateAsync();
       
@@ -220,25 +225,25 @@ export const useCarreras = (partidaId: number) => {
       console.error("Error al finalizar carrera:", err);
       Alert.alert("Error", "No se ha podido procesar el avance de la temporada.");
     }
-  };
+  }, [mutationAvanzar, queryClient, partidaId]);
 
   /**
    * setCompuestoSeleccionado
    * 
    * Cambia el neumático que se pondrá en el próximo pit stop.
    */
-  const setCompuestoSeleccionado = (pilotoId: number, c: Compuesto) => {
+  const setCompuestoSeleccionado = useCallback((pilotoId: number, c: Compuesto) => {
     setCompuestosSiguientes(prev => ({ ...prev, [pilotoId]: c }));
-  };
+  }, []);
 
   /**
    * setCompuestoInicial
    * 
    * Cambia el neumático de salida (fase parrilla).
    */
-  const setCompuestoInicial = (pilotoId: number, c: Compuesto) => {
+  const setCompuestoInicial = useCallback((pilotoId: number, c: Compuesto) => {
     setCompuestosIniciales(prev => ({ ...prev, [pilotoId]: c }));
-  };
+  }, []);
 
   return {
     fase,

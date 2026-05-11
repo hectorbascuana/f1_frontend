@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useRef } from 'react';
+import { router } from 'expo-router';
+import React, { useRef, useState, useEffect } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PilotoCard } from '../../../../components/carrera/PilotoCard';
-import { PlayerHUD } from '../../../../components/carrera/PlayerHUD';
-import { useCarreras } from '../../../../hooks/carreras/useCarreras';
-import { Compuesto } from '../../../../core/types/carreraDTO';
+import { PilotoCard } from '../../../components/carrera/PilotoCard';
+import { PlayerHUD } from '../../../components/carrera/PlayerHUD';
+import { useCarreras } from '../../../hooks/carreras/useCarreras';
+import { Compuesto } from '../../../core/types/carreraDTO';
+import { useActiveGame } from '../../../hooks/store/useActiveGame';
 
 /**
  * CarreraSimulacionScreen
@@ -16,9 +17,9 @@ import { Compuesto } from '../../../../core/types/carreraDTO';
  */
 
 export default function CarreraSimulacionScreen() {
-  const { id } = useLocalSearchParams();
-  const router = useRouter();
-  const partidaId = Number(id);
+  const { partida } = useActiveGame();
+  // Usamos un ref/estado para garantizar que no cambie y no dependa de Hooks de Router
+  const [partidaId] = useState(() => partida?.id || 0);
 
   const {
     fase,
