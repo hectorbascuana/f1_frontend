@@ -7,34 +7,10 @@ import { ESCUDERIAS_DATA } from '../../../../../constants/EscuderiasData';
 import { getTeamImage } from '../../../../../constants/TeamAssets';
 import { useCircuito } from '../../../../../core/api/hooks/carrera/useCircuito';
 import { useCircuitos } from '../../../../../core/api/hooks/carrera/useCircuitos';
+import { useResultadoCarrera } from '../../../../../core/api/hooks/carrera/useResultadoCarrera';
 import { useActiveGame } from '../../../../../hooks/store/useActiveGame';
 import PartidaHeader from '../../../../../components/partidas/PartidaHeader';
-
-// Datos de pilotos para la clasificación de ejemplo
-const MOCK_DRIVERS = [
-  { "nombre": "Max Verstappen", "pais": "Países Bajos", "imagen": "assets/drivers/verstappen.png", "escuderia_id": 1, "edad": 28, "puntos": 25, "valor": 55.00, "tiempo": "1:24.322" },
-  { "nombre": "Charles Leclerc", "pais": "Mónaco", "imagen": "assets/drivers/leclerc.png", "escuderia_id": 3, "edad": 28, "puntos": 18, "valor": 48.00, "tiempo": "+4.322s" },
-  { "nombre": "Lando Norris", "pais": "Reino Unido", "imagen": "assets/drivers/norris.png", "escuderia_id": 4, "edad": 26, "puntos": 15, "valor": 42.00, "tiempo": "+8.112s" },
-  { "nombre": "Lewis Hamilton", "pais": "Reino Unido", "imagen": "assets/drivers/hamilton.png", "escuderia_id": 3, "edad": 41, "puntos": 12, "valor": 50.00, "tiempo": "+12.441s" },
-  { "nombre": "Carlos Sainz Jr.", "pais": "España", "imagen": "assets/drivers/sainz.png", "escuderia_id": 7, "edad": 31, "puntos": 10, "valor": 34.00, "tiempo": "+14.882s" },
-  { "nombre": "George Russell", "pais": "Reino Unido", "imagen": "assets/drivers/russell.png", "escuderia_id": 2, "edad": 28, "puntos": 8, "valor": 38.00, "tiempo": "+15.221s" },
-  { "nombre": "Oscar Piastri", "pais": "Australia", "imagen": "assets/drivers/piastri.png", "escuderia_id": 4, "edad": 24, "puntos": 6, "valor": 35.00, "tiempo": "+18.991s" },
-  { "nombre": "Fernando Alonso", "pais": "España", "imagen": "assets/drivers/alonso.png", "escuderia_id": 5, "edad": 44, "puntos": 4, "valor": 35.00, "tiempo": "+22.331s" },
-  { "nombre": "Sergio Pérez", "pais": "México", "imagen": "assets/drivers/perez.png", "escuderia_id": 11, "edad": 36, "puntos": 2, "valor": 25.00, "tiempo": "+25.112s" },
-  { "nombre": "Nico Hülkenberg", "pais": "Alemania", "imagen": "assets/drivers/hulkenberg.png", "escuderia_id": 9, "edad": 38, "puntos": 1, "valor": 18.00, "tiempo": "+30.551s" },
-  { "nombre": "Alex Albon", "pais": "Tailandia", "imagen": "assets/drivers/albon.png", "escuderia_id": 7, "edad": 30, "puntos": 0, "valor": 20.00, "tiempo": "+35.112s" },
-  { "nombre": "Pierre Gasly", "pais": "Francia", "imagen": "assets/drivers/gasly.png", "escuderia_id": 6, "edad": 30, "puntos": 0, "valor": 22.00, "tiempo": "+38.441s" },
-  { "nombre": "Esteban Ocon", "pais": "Francia", "imagen": "assets/drivers/ocon.png", "escuderia_id": 10, "edad": 29, "puntos": 0, "valor": 18.00, "tiempo": "+40.221s" },
-  { "nombre": "Lance Stroll", "pais": "Canadá", "imagen": "assets/drivers/stroll.png", "escuderia_id": 5, "edad": 27, "puntos": 0, "valor": 15.00, "tiempo": "+44.881s" },
-  { "nombre": "Valtteri Bottas", "pais": "Finlandia", "imagen": "assets/drivers/bottas.png", "escuderia_id": 11, "edad": 36, "puntos": 0, "valor": 20.00, "tiempo": "+48.991s" },
-  { "nombre": "Liam Lawson", "pais": "Nueva Zelanda", "imagen": "assets/drivers/lawson.png", "escuderia_id": 8, "edad": 24, "puntos": 0, "valor": 14.00, "tiempo": "+52.331s" },
-  { "nombre": "Franco Colapinto", "pais": "Argentina", "imagen": "assets/drivers/colapinto.png", "escuderia_id": 6, "edad": 22, "puntos": 0, "valor": 15.00, "tiempo": "+55.112s" },
-  { "nombre": "Oliver Bearman", "pais": "Reino Unido", "imagen": "assets/drivers/bearman.png", "escuderia_id": 10, "edad": 20, "puntos": 0, "valor": 12.00, "tiempo": "+58.441s" },
-  { "nombre": "Gabriel Bortoleto", "pais": "Brasil", "imagen": "assets/drivers/bortoleto.png", "escuderia_id": 9, "edad": 21, "puntos": 0, "valor": 15.00, "tiempo": "+1:02.331s" },
-  { "nombre": "Andrea Kimi Antonelli", "pais": "Italia", "imagen": "assets/drivers/antonelli.png", "escuderia_id": 2, "edad": 19, "puntos": 0, "valor": 20.00, "tiempo": "+1:05.112s" },
-  { "nombre": "Isack Hadjar", "pais": "Francia", "imagen": "assets/drivers/hadjar.png", "escuderia_id": 1, "edad": 21, "puntos": 0, "valor": 12.00, "tiempo": "+1:08.441s" },
-  { "nombre": "Arvid Lindblad", "pais": "Reino Unido", "imagen": "assets/drivers/lindblad.png", "escuderia_id": 8, "edad": 18, "puntos": 0, "valor": 10.00, "tiempo": "+1:12.331s" }
-];
+import { getDriverImage } from '../../../../../constants/DriverAssets';
 
 export default function GameDashboard() {
   const insets = useSafeAreaInsets();
@@ -56,6 +32,17 @@ export default function GameDashboard() {
   }, [partida]);
 
   const { data: circuito, isLoading: loadingCircuito } = useCircuito(idCircuitoVisualizado || 1);
+  
+  // Nuevo Hook para resultados oficiales
+  const { 
+    data: resultados, 
+    isLoading: loadingResultados 
+  } = useResultadoCarrera(
+    partida?.id || 0, 
+    partida?.anio || 2025, 
+    idCircuitoVisualizado || 0, 
+    partida?.proximoCircuito || 0
+  );
 
   if (loadingPartida || loadingCircuito || loadingTodos) {
     return (
@@ -192,7 +179,7 @@ export default function GameDashboard() {
         </View>
 
         {/* Sección 4: Resultados / Podio (Si es pasada) */}
-        {esCarreraPasada && (
+        {esCarreraPasada && resultados && resultados.length > 0 && (
           <View className="mt-4">
             <Text className="text-[#555] text-[10px] font-black uppercase tracking-[2px] mb-3">Resultados GP</Text>
             <TouchableOpacity
@@ -204,26 +191,50 @@ export default function GameDashboard() {
                 {/* 2º Puesto */}
                 <View className="items-center mx-2 transform translate-y-2">
                   <Text className="text-[#C0C0C0] font-black text-xs">2º</Text>
-                  <View className="bg-[#1a1a1a] p-1.5 rounded-full border border-gray-500 my-1">
-                    <Ionicons name="person" size={20} color="#C0C0C0" />
+                  <View className="bg-[#1a1a1a] p-1.5 rounded-full border border-gray-500 my-1 overflow-hidden w-10 h-10 items-center justify-center">
+                    {resultados[1] ? (
+                      <Image 
+                        source={getDriverImage(resultados[1].pilotoImagen.replace('assets/drivers/', 'assets/images/drivers/'))} 
+                        className="w-full h-full" 
+                        resizeMode="cover" 
+                      />
+                    ) : (
+                      <Ionicons name="person" size={20} color="#C0C0C0" />
+                    )}
                   </View>
-                  <Text className="text-white text-[9px] font-bold">LECLERC</Text>
+                  <Text className="text-white text-[9px] font-bold">{resultados[1]?.pilotoNombre.split(' ').pop()?.toUpperCase() || '---'}</Text>
                 </View>
                 {/* 1º Puesto */}
                 <View className="items-center mx-4 -translate-y-1">
                   <Ionicons name="trophy" size={20} color="#FFD700" />
-                  <View className="bg-[#1a1a1a] p-2.5 rounded-full border border-yellow-500 my-1">
-                    <Ionicons name="person" size={28} color="#FFD700" />
+                  <View className="bg-[#1a1a1a] p-1 rounded-full border border-yellow-500 my-1 overflow-hidden w-14 h-14 items-center justify-center">
+                    {resultados[0] ? (
+                      <Image 
+                        source={getDriverImage(resultados[0].pilotoImagen.replace('assets/drivers/', 'assets/images/drivers/'))} 
+                        className="w-full h-full" 
+                        resizeMode="cover" 
+                      />
+                    ) : (
+                      <Ionicons name="person" size={28} color="#FFD700" />
+                    )}
                   </View>
-                  <Text className="text-white text-[10px] font-black uppercase">VERSTAPPEN</Text>
+                  <Text className="text-white text-[10px] font-black uppercase">{resultados[0]?.pilotoNombre.split(' ').pop()?.toUpperCase() || '---'}</Text>
                 </View>
                 {/* 3º Puesto */}
                 <View className="items-center mx-2 transform translate-y-4">
                   <Text className="text-[#CD7F32] font-black text-xs">3º</Text>
-                  <View className="bg-[#1a1a1a] p-1.5 rounded-full border border-orange-500 my-1">
-                    <Ionicons name="person" size={20} color="#CD7F32" />
+                  <View className="bg-[#1a1a1a] p-1.5 rounded-full border border-orange-500 my-1 overflow-hidden w-10 h-10 items-center justify-center">
+                    {resultados[2] ? (
+                      <Image 
+                        source={getDriverImage(resultados[2].pilotoImagen.replace('assets/drivers/', 'assets/images/drivers/'))} 
+                        className="w-full h-full" 
+                        resizeMode="cover" 
+                      />
+                    ) : (
+                      <Ionicons name="person" size={20} color="#CD7F32" />
+                    )}
                   </View>
-                  <Text className="text-white text-[9px] font-bold">NORRIS</Text>
+                  <Text className="text-white text-[9px] font-bold">{resultados[2]?.pilotoNombre.split(' ').pop()?.toUpperCase() || '---'}</Text>
                 </View>
               </View>
               <View className="bg-[#1a1a1a] px-3 py-1 rounded-full border border-[#333] mt-4">
@@ -307,63 +318,82 @@ export default function GameDashboard() {
               <Ionicons name="close-circle" size={32} color="#E10600" />
             </TouchableOpacity>
           </View>
-          <FlatList
-            data={MOCK_DRIVERS}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => {
-              const escuderia = ESCUDERIAS_DATA.find(e => e.id === item.escuderia_id);
-              const teamLogo = escuderia ? getTeamImage(escuderia.imagen) : null;
 
-              // Nota: En una app real esto vendría del backend. 
-              // Simulamos que el 1º tiene la vuelta rápida para este ejemplo visual.
-              const esVueltaRapidaGlobal = index === 0;
-              const vRapida = esVueltaRapidaGlobal ? "1:21.042" : `1:${(22 + Math.random() * 2).toFixed(3)}`;
-              const purpleF1 = "#B35AD1";
+          {loadingResultados ? (
+            <ActivityIndicator size="large" color="#E10600" className="mt-20" />
+          ) : (
+            <FlatList
+              data={resultados}
+              keyExtractor={(item) => item.pilotoId.toString()}
+              renderItem={({ item, index }) => {
+                // Cálculo de puntos F1 estándar
+                const getPoints = (pos: number | null) => {
+                  if (pos === 1) return 25;
+                  if (pos === 2) return 18;
+                  if (pos === 3) return 15;
+                  if (pos === 4) return 12;
+                  if (pos === 5) return 10;
+                  if (pos === 6) return 8;
+                  if (pos === 7) return 6;
+                  if (pos === 8) return 4;
+                  if (pos === 9) return 2;
+                  if (pos === 10) return 1;
+                  return 0;
+                };
 
-              return (
-                <View className="mx-6 mb-2 bg-[#121212] border border-[#222] rounded-xl p-3 flex-row items-center">
-                  <Text className="text-[#E10600] font-black w-8 text-center">{index + 1}º</Text>
+                const points = getPoints(item.posicion);
+                const driverImg = getDriverImage(item.pilotoImagen.replace('assets/drivers/', 'assets/images/drivers/'));
+                
+                // Nota: La vuelta rápida global se marcaría si la API lo indicara, 
+                // de momento usamos el índice 0 como referencia visual si tiene tiempo.
+                const esVueltaRapidaGlobal = index === 0 && !!item.vueltaRapida;
+                const purpleF1 = "#B35AD1";
 
-                  <View className="w-8 h-8 bg-black rounded-lg border border-[#333] items-center justify-center overflow-hidden">
-                    {teamLogo ? (
-                      <Image source={teamLogo} className="w-full h-full" resizeMode="cover" />
-                    ) : (
-                      <Ionicons name="car" size={14} color="#333" />
-                    )}
-                  </View>
+                return (
+                  <View className="mx-6 mb-2 bg-[#121212] border border-[#222] rounded-xl p-3 flex-row items-center">
+                    <Text className="text-[#E10600] font-black w-8 text-center">
+                      {item.posicion ? `${item.posicion}º` : 'DNF'}
+                    </Text>
 
-                  <View className="w-10 h-10 bg-[#1a1a1a] rounded-full border border-[#333] ml-3 mr-3 items-center justify-center">
-                    <Ionicons name="person" size={20} color="#555" />
-                  </View>
+                    <View className="w-10 h-10 bg-[#1a1a1a] rounded-full border border-[#333] mr-3 items-center justify-center overflow-hidden">
+                      {driverImg ? (
+                        <Image source={driverImg} className="w-full h-full" resizeMode="cover" />
+                      ) : (
+                        <Ionicons name="person" size={20} color="#555" />
+                      )}
+                    </View>
 
-                  <View className="flex-1">
-                    <Text className="text-white font-bold text-sm">{item.nombre.toUpperCase()}</Text>
-                    <View className="flex-row items-center mt-0.5">
-                      <Ionicons
-                        name="stopwatch-outline"
-                        size={10}
-                        color={esVueltaRapidaGlobal ? purpleF1 : "#555"}
-                      />
-                      <Text
-                        style={{ color: esVueltaRapidaGlobal ? purpleF1 : "#555" }}
-                        className="text-[9px] font-black uppercase ml-1"
-                      >
-                        {esVueltaRapidaGlobal ? "Vuelta Rápida: " : "V. Rápida: "}{vRapida}
-                      </Text>
+                    <View className="flex-1">
+                      <Text className="text-white font-bold text-sm">{item.pilotoNombre.toUpperCase()}</Text>
+                      <View className="flex-row items-center mt-0.5">
+                        <Ionicons
+                          name="stopwatch-outline"
+                          size={10}
+                          color={esVueltaRapidaGlobal ? purpleF1 : "#555"}
+                        />
+                        <Text
+                          style={{ color: esVueltaRapidaGlobal ? purpleF1 : "#555" }}
+                          className="text-[9px] font-black uppercase ml-1"
+                        >
+                          {item.vueltaRapida || '---'}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View className="items-end">
+                      <Text className="text-white text-[10px] font-black">{item.tiempoTotal || 'OUT'}</Text>
+                      {points > 0 && (
+                        <View className="bg-emerald-500/10 px-2 py-0.5 rounded mt-1">
+                          <Text className="text-emerald-400 font-bold text-[9px]">+{points} PTS</Text>
+                        </View>
+                      )}
                     </View>
                   </View>
-
-                  <View className="items-end">
-                    <Text className="text-white text-[10px] font-black">{item.tiempo}</Text>
-                    <View className="bg-emerald-500/10 px-2 py-0.5 rounded mt-1">
-                      <Text className="text-emerald-400 font-bold text-[9px]">+{item.puntos} PTS</Text>
-                    </View>
-                  </View>
-                </View>
-              );
-            }}
-            contentContainerStyle={{ paddingBottom: 40 }}
-          />
+                );
+              }}
+              contentContainerStyle={{ paddingBottom: 40 }}
+            />
+          )}
         </View>
       </Modal>
       </View>
