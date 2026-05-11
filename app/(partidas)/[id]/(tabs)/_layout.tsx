@@ -49,7 +49,7 @@ export default function TabsLayout() {
       />
 
       <Tabs.Screen
-        name="pilotos/index"
+        name="pilotos"
         options={{
           title: 'Pilotos',
           tabBarLabel: 'Pilotos',

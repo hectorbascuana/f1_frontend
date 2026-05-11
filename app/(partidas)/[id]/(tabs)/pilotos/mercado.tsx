@@ -10,6 +10,8 @@ import { getDriverImage } from '@/constants/DriverAssets';
 import { getTeamImage } from '@/constants/TeamAssets';
 import { BASE_URL } from '@/utils/api';
 
+import PartidaHeader from '../../../../../components/partidas/PartidaHeader';
+
 /**
  * MercadoScreen
  * 
@@ -76,8 +78,9 @@ export default function MercadoScreen() {
 
     return (
         <View className="flex-1 bg-[#0a0a0a]">
+            <PartidaHeader />
             {/* Header Integrado */}
-            <View className="pt-4 pb-0 px-6">
+            <View className="pt-6 pb-0 px-6">
                 <View className="flex-row items-center justify-between mb-5">
                     <TouchableOpacity 
                         onPress={() => router.back()}
