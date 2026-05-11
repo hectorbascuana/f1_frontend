@@ -27,12 +27,6 @@ export const PlayerHUD = React.memo<PlayerHUDProps>(({
   onConfirmPitStop,
   isGrid = false,
 }) => {
-  console.log('[PlayerHUD] Renderizado con:', {
-    pilotosCount: pilotos.length,
-    hasOnConfirm: !!onConfirmPitStop,
-    isGrid
-  });
-
   if (pilotos.length === 0) return null;
 
   const getCompuestoColor = (c: Compuesto) => {
@@ -58,8 +52,6 @@ export const PlayerHUD = React.memo<PlayerHUDProps>(({
       {pilotos.map((p, idx) => {
         const nextComp = compuestos[p.pilotoId] || 'MEDIO';
         const isConfirmed = !!pitStopsConfirmados[p.pilotoId];
-
-        console.log(`[PlayerHUD] Renderizando piloto ${p.pilotoId}, isConfirmed: ${isConfirmed}`);
 
         return (
           <View

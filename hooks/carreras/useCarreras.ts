@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Alert, BackHandler } from 'react-native';
 import { router } from 'expo-router';
 import { useIniciarCarrera, useAvanzarVuelta } from '../../core/api/hooks/carrera/useCarreraSimulacion';
-import { useSiguienteCarrera } from '../../core/api/hooks/carrera/useCircuito';
+import { api } from '@/utils/api';
+import { mapPartidaFromDTO } from '@/core/mappers/partidaMapper';
+import { useSiguienteCarrera } from '@/core/api/hooks/carrera/useCircuito';
 import { PilotoRankingDTO, Compuesto, VueltaRequestDTO } from '../../core/types/carreraDTO';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -194,9 +196,7 @@ export const useCarreras = (partidaId: number) => {
    * Registro de decisión de parada en boxes del jugador.
    */
   const handleConfirmPitStop = useCallback((pilotoId: number) => {
-    console.log(`[useCarreras] Callback handleConfirmPitStop invocado para pilotoId: ${pilotoId}`);
     setPitStopsConfirmados(prev => {
-        console.log('[useCarreras] Actualizando estado de pit stops confirmados:', { ...prev, [pilotoId]: true });
         return { ...prev, [pilotoId]: true };
     });
     setCompuestosSiguientes(prev => {
@@ -207,6 +207,8 @@ export const useCarreras = (partidaId: number) => {
     });
   }, []);
 
+  const [isAdvancing, setIsAdvancing] = useState(false);
+
   /**
    * handleFinishAndExit
    * 
@@ -214,15 +216,40 @@ export const useCarreras = (partidaId: number) => {
    */
   const handleFinishAndExit = useCallback(async () => {
     try {
+      console.log('[AVANCE] Iniciando proceso de finalización para partida:', partidaId);
+      setIsAdvancing(true);
+      
+      // 1. Ejecutamos el avance en el servidor
+      console.log('[AVANCE] 1. Llamando a mutationAvanzar...');
       await mutationAvanzar.mutateAsync();
+      console.log('[AVANCE] 1. Respuesta recibida del servidor (OK)');
       
-      // Invalidamos las queries para que al volver, la info esté actualizada
-      queryClient.invalidateQueries({ queryKey: ['partida'] });
-      queryClient.invalidateQueries({ queryKey: ['calendario'] });
+      // 2. Invalidamos las queries críticas
+      console.log('[AVANCE] 2. Invalidando todas las consultas de TanStack...');
+      await queryClient.invalidateQueries({ queryKey: ['partida'] });
+      await queryClient.invalidateQueries({ queryKey: ['escuderia'] });
+      await queryClient.invalidateQueries({ queryKey: ['pilotos'] });
+      await queryClient.invalidateQueries({ queryKey: ['clasificacion'] });
+      await queryClient.invalidateQueries({ queryKey: ['circuitos'] });
+      await queryClient.invalidateQueries({ queryKey: ['circuito'] });
+      console.log('[AVANCE] 2. Invalidación completada');
+
+      // 3. Forzamos refetch de la partida actual para obtener el nuevo proximoCircuito
+      console.log('[AVANCE] 3. Solicitando refetch de la partida ID:', partidaId);
+      const { data: rawPartida } = await api.get(`partida/${partidaId}`);
+      const freshPartida = mapPartidaFromDTO(rawPartida);
       
+      // Actualizamos manualmente el cache de TanStack para que todos los hooks lo vean
+      queryClient.setQueryData(['partida', partidaId.toString()], freshPartida);
+      
+      console.log('[AVANCE] 3. Refetch y Cache manual completados. Nuevo proximoCircuito:', freshPartida?.proximoCircuito);
+      
+      console.log('[AVANCE] Finalización exitosa. Navegando al Dashboard...');
+      setIsAdvancing(false);
       router.replace(`/(partidas)/${partidaId}` as any);
     } catch (err) {
-      console.error("Error al finalizar carrera:", err);
+      console.error("[AVANCE] ERROR CRÍTICO:", err);
+      setIsAdvancing(false);
       Alert.alert("Error", "No se ha podido procesar el avance de la temporada.");
     }
   }, [mutationAvanzar, queryClient, partidaId]);
@@ -261,6 +288,7 @@ export const useCarreras = (partidaId: number) => {
     handleConfirmPitStop,
     handleFinishAndExit,
     setCompuestoSeleccionado,
-    setCompuestoInicial
+    setCompuestoInicial,
+    isAdvancing
   };
 };

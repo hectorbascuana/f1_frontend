@@ -19,29 +19,22 @@ export const useActiveGame = () => {
     // Ignoramos placeholders tipo "[id]" que a veces devuelve Expo Router en la carga inicial
     const urlId = (rawId && rawId !== '[id]' && rawId !== '{id}') ? rawId : undefined;
 
-    // Solo consideramos que NO coincide si tenemos un ID en la URL y es distinto al del Store.
-    // Si urlId es undefined (transición), mantenemos la partida del Store como válida provisionalmente.
-    const idCoincide = !!partida && (!urlId || partida.id.toString() === urlId.toString());
-
-    // Si no coincide o no hay partida en el store, pedimos los datos reales (solo si tenemos un URL id real)
-    const fetchId = !idCoincide ? urlId : undefined;
-    const { data: serverPartida, isLoading, error } = usePartida(fetchId);
+    // Sincronizamos con el servidor siempre que tengamos un ID válido en la URL.
+    // Esto permite que queryClient.invalidateQueries(['partida', urlId]) funcione.
+    const { data: serverPartida, isLoading, error } = usePartida(urlId);
 
     useEffect(() => {
         if (serverPartida) {
-            console.log('[useActiveGame] Datos recibidos del servidor para partida:', serverPartida.id);
-            // Solo actualizamos si realmente es diferente para evitar loops
+            // Solo actualizamos el store si hay cambios reales para evitar re-renderizados infinitos
             if (JSON.stringify(serverPartida) !== JSON.stringify(partida)) {
-                console.log('[useActiveGame] Actualizando store con datos frescos');
                 setPartida(serverPartida);
             }
         }
     }, [serverPartida, setPartida, partida]);
 
     return {
-        // Priorizamos la partida del servidor si acabamos de hacer fetch por discrepancia de ID
-        partida: idCoincide ? partida : serverPartida,
-        isLoading: !idCoincide && !!urlId && isLoading,
+        partida: serverPartida || partida, // Prioridad al dato más fresco del servidor
+        isLoading: isLoading && !partida,   // Solo mostramos loading si no tenemos nada en el store
         error: error ? 'Error al sincronizar la sesión de juego' : null
     };
 };

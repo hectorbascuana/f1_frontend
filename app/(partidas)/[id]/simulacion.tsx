@@ -36,7 +36,8 @@ export default function CarreraSimulacionScreen() {
     handleConfirmPitStop,
     handleFinishAndExit,
     setCompuestoSeleccionado,
-    setCompuestoInicial
+    setCompuestoInicial,
+    isAdvancing
   } = useCarreras(partidaId);
 
   const scrollRef = useRef<ScrollView>(null);
@@ -55,11 +56,13 @@ export default function CarreraSimulacionScreen() {
     }
   }, [pilotosVisiblesCount, fase, startData]);
 
-  if (loadingStart) {
+  if (loadingStart || isAdvancing) {
     return (
       <View className="flex-1 bg-[#0a0a0a] justify-center items-center">
         <ActivityIndicator size="large" color="#E10600" />
-        <Text className="text-white mt-4 font-bold tracking-[2px]">PREPARANDO MOTORES...</Text>
+        <Text className="text-white mt-4 font-bold tracking-[2px] uppercase">
+          {isAdvancing ? 'Calculando Resultados...' : 'Preparando Motores...'}
+        </Text>
       </View>
     );
   }

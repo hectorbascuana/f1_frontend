@@ -24,12 +24,12 @@ export default function GameDashboard() {
   const [selectorVisible, setSelectorVisible] = useState(false);
   const [clasificacionVisible, setClasificacionVisible] = useState(false);
 
-  // Sincronizar el ID visualizado con el de la partida al cargar
+  // Sincronizar el ID visualizado con el de la partida al cargar o cuando avanza la ronda
   useEffect(() => {
-    if (partida && idCircuitoVisualizado === null) {
+    if (partida?.proximoCircuito) {
       setIdCircuitoVisualizado(partida.proximoCircuito);
     }
-  }, [partida]);
+  }, [partida?.proximoCircuito]);
 
   const { data: circuito, isLoading: loadingCircuito } = useCircuito(idCircuitoVisualizado || 1);
   
