@@ -26,6 +26,7 @@ export const useCarreras = (partidaId: number) => {
   const [vueltaActual, setVueltaActual] = useState(0);
   const [totalVueltas, setTotalVueltas] = useState(0);
   const [pilotosVisiblesCount, setPilotosVisiblesCount] = useState(0);
+  const [velocidad, setVelocidad] = useState(2000); // Velocidad por defecto: 2s (Standard)
 
   // Estados de estrategia (Jugador)
   const [compuestosIniciales, setCompuestosIniciales] = useState<Record<number, Compuesto>>({});
@@ -41,6 +42,7 @@ export const useCarreras = (partidaId: number) => {
   // Referencias para el bucle y cierres (stale closures)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const vueltaActualRef = useRef(0);
+  const velocidadRef = useRef(2000);
   const estrategiaRef = useRef({
     pitStops: {} as Record<number, boolean>,
     compuestos: {} as Record<number, Compuesto>
@@ -58,6 +60,10 @@ export const useCarreras = (partidaId: number) => {
   useEffect(() => {
     rankingRef.current = ranking;
   }, [ranking]);
+
+  useEffect(() => {
+    velocidadRef.current = velocidad;
+  }, [velocidad]);
 
   // Bloquear retroceso físico durante la carrera
   useEffect(() => {
@@ -170,7 +176,7 @@ export const useCarreras = (partidaId: number) => {
       if (res.finalizada) {
         setFase('FINALIZADA');
       } else {
-        timeoutRef.current = setTimeout(() => ejecutarVuelta(currentUuid), 2000);
+        timeoutRef.current = setTimeout(() => ejecutarVuelta(currentUuid), velocidadRef.current);
       }
     } catch (err) {
       console.error("Error en bucle de carrera:", err);
@@ -232,6 +238,7 @@ export const useCarreras = (partidaId: number) => {
       await queryClient.invalidateQueries({ queryKey: ['clasificacion'] });
       await queryClient.invalidateQueries({ queryKey: ['circuitos'] });
       await queryClient.invalidateQueries({ queryKey: ['circuito'] });
+      await queryClient.invalidateQueries({ queryKey: ['carrera', 'start'] });
       console.log('[AVANCE] 2. Invalidación completada');
 
       // 3. Forzamos refetch de la partida actual para obtener el nuevo proximoCircuito
@@ -289,6 +296,8 @@ export const useCarreras = (partidaId: number) => {
     handleFinishAndExit,
     setCompuestoSeleccionado,
     setCompuestoInicial,
-    isAdvancing
+    isAdvancing,
+    velocidad,
+    setVelocidad
   };
 };

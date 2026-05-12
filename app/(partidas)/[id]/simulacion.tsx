@@ -1,12 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PilotoCard } from '../../../components/carrera/PilotoCard';
 import { PlayerHUD } from '../../../components/carrera/PlayerHUD';
 import { useCarreras } from '../../../hooks/carreras/useCarreras';
-import { Compuesto } from '../../../core/types/carreraDTO';
 import { useActiveGame } from '../../../hooks/store/useActiveGame';
 
 /**
@@ -37,7 +35,9 @@ export default function CarreraSimulacionScreen() {
     handleFinishAndExit,
     setCompuestoSeleccionado,
     setCompuestoInicial,
-    isAdvancing
+    isAdvancing,
+    velocidad,
+    setVelocidad
   } = useCarreras(partidaId);
 
   const scrollRef = useRef<ScrollView>(null);
@@ -47,11 +47,11 @@ export default function CarreraSimulacionScreen() {
     if (fase === 'PRECARRERA' && startData) {
       const total = startData.parrilla.length;
       const currentPosRevealed = total - pilotosVisiblesCount + 1;
-      
+
       // Scroll suave hacia el piloto recién revelado
-      scrollRef.current?.scrollTo({ 
-        y: Math.max(0, (currentPosRevealed - 1) * 90 - 100), 
-        animated: true 
+      scrollRef.current?.scrollTo({
+        y: Math.max(0, (currentPosRevealed - 1) * 90 - 100),
+        animated: true
       });
     }
   }, [pilotosVisiblesCount, fase, startData]);
@@ -69,7 +69,7 @@ export default function CarreraSimulacionScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0a0a0a]" edges={['top', 'bottom']}>
-      
+
       {/* Cabecera de Telemetría */}
       <View className="px-6 py-4 flex-row justify-between items-center border-b border-[#222]">
         <View>
@@ -77,11 +77,35 @@ export default function CarreraSimulacionScreen() {
             {fase === 'PRECARRERA' ? 'Parrilla de Salida' : fase === 'ACTIVA' ? 'Carrera en Vivo' : 'Fin de Carrera'}
           </Text>
           <Text className="text-white text-xl font-black italic">
-            {fase === 'ACTIVA' ? `VUELTA ${vueltaActual} / ${totalVueltas}` : 'GP SIMULACIÓN'}
+            {fase === 'ACTIVA' ? `VUELTA ${vueltaActual} / ${totalVueltas}` : `GP ${startData?.circuito.nombre}`}
           </Text>
         </View>
+
+        {/* Selector de Velocidad (Solo cuando la carrera está ACTIVA) */}
+        {fase === 'ACTIVA' && (
+          <View className="flex-row bg-[#151515] p-1 rounded-xl border border-[#222]">
+            {[
+              { label: 'x0.5', val: 4000, icon: 'play-outline' },
+              { label: 'x1', val: 2000, icon: 'play-forward-outline' },
+              { label: 'x2', val: 1000, icon: 'play-skip-forward-outline' },
+            ].map((v) => (
+              <TouchableOpacity
+                key={v.val}
+                onPress={() => setVelocidad(v.val)}
+                className={`px-3 py-1.5 rounded-lg items-center justify-center ${velocidad === v.val ? 'bg-[#E10600]' : ''}`}
+              >
+                <Ionicons
+                  name={v.icon as any}
+                  size={16}
+                  color={velocidad === v.val ? 'white' : '#555'}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
         {fase === 'PRECARRERA' && (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={handleStartRace}
             className="bg-[#E10600] px-4 py-2 rounded-lg"
           >
@@ -89,7 +113,7 @@ export default function CarreraSimulacionScreen() {
           </TouchableOpacity>
         )}
         {fase === 'FINALIZADA' && (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={handleFinishAndExit}
             className="bg-[#E10600] px-4 py-2 rounded-lg"
           >
@@ -98,15 +122,15 @@ export default function CarreraSimulacionScreen() {
         )}
       </View>
 
-      <ScrollView 
+      <ScrollView
         ref={scrollRef}
-        className="flex-1 px-4 mt-4" 
-        contentContainerStyle={{ 
-          paddingBottom: (fase === 'ACTIVA' || (fase === 'PRECARRERA' && pilotosVisiblesCount === startData?.parrilla.length)) ? 160 : 40 
+        className="flex-1 px-4 mt-4"
+        contentContainerStyle={{
+          paddingBottom: (fase === 'ACTIVA' || (fase === 'PRECARRERA' && pilotosVisiblesCount === startData?.parrilla.length)) ? 160 : 40
         }}
       >
         <View style={{ height: (fase === 'PRECARRERA' ? startData?.parrilla.length || 0 : ranking.length) * 90 }}>
-          
+
           {/* FASE 1: Parrilla de Salida (Revelación con suspense) */}
           {fase === 'PRECARRERA' && startData?.parrilla
             .filter(p => p.posicion >= (startData.parrilla.length - pilotosVisiblesCount + 1))
@@ -115,13 +139,13 @@ export default function CarreraSimulacionScreen() {
               const podiumColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
 
               return (
-                <View 
-                  key={p.pilotoId} 
+                <View
+                  key={p.pilotoId}
                   className={`bg-[#121212] border-2 ${p.esJugador ? 'border-[#E10600]' : 'border-[#222]'} rounded-2xl p-4 mb-3 flex-row items-center`}
                   style={{ position: 'absolute', top: (p.posicion - 1) * 90, left: 0, right: 0 }}
                 >
-                  <Text 
-                    style={{ color: isFirst3 ? podiumColors[p.posicion - 1] : '#E10600' }} 
+                  <Text
+                    style={{ color: isFirst3 ? podiumColors[p.posicion - 1] : '#E10600' }}
                     className="font-black text-xl italic w-10 text-center"
                   >
                     {p.posicion}º
@@ -131,8 +155,8 @@ export default function CarreraSimulacionScreen() {
                     <View className="flex-row items-center">
                       <Text className="text-[#555] text-[10px] font-bold">{p.escuderia.toUpperCase()}</Text>
                       <View className="w-1 h-1 bg-[#444] rounded-full mx-1.5" />
-                      <Text 
-                        style={{ color: (p as any).dnf ? '#EF4444' : '#888' }} 
+                      <Text
+                        style={{ color: (p as any).dnf ? '#EF4444' : '#888' }}
                         className="text-[10px] font-bold uppercase italic"
                       >
                         {(p as any).dnf ? 'DNF' : (p.posicion === 1 ? 'Leader' : `+${((p.tiempoClasificacionMs - (startData?.parrilla[0]?.tiempoClasificacionMs || 0)) / 1000).toFixed(3)}s`)}
@@ -151,7 +175,7 @@ export default function CarreraSimulacionScreen() {
 
           {/* FASE 2 y 3: Carrera Activa / Finalizada */}
           {fase !== 'PRECARRERA' && ranking.map((p, index) => (
-            <PilotoCard 
+            <PilotoCard
               key={p.pilotoId}
               piloto={p}
               index={index}
@@ -164,7 +188,7 @@ export default function CarreraSimulacionScreen() {
       {/* HUD Persistente del Jugador */}
       {/* HUD Persistente del Jugador */}
       {fase === 'ACTIVA' && (
-        <PlayerHUD 
+        <PlayerHUD
           pilotos={ranking.filter(p => p.esJugador).sort((a, b) => a.pilotoId - b.pilotoId)}
           compuestos={compuestosSiguientes}
           pitStopsConfirmados={pitStopsConfirmados}
@@ -174,7 +198,7 @@ export default function CarreraSimulacionScreen() {
       )}
 
       {fase === 'PRECARRERA' && pilotosVisiblesCount === startData?.parrilla.length && (
-        <PlayerHUD 
+        <PlayerHUD
           pilotos={startData?.parrilla.filter(p => p.esJugador).sort((a, b) => a.pilotoId - b.pilotoId) || []}
           compuestos={compuestosIniciales}
           onSelectCompuesto={setCompuestoInicial}

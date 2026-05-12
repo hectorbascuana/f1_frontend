@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
  * @returns Un objeto con la información de la consulta de partidas.
  */
 export const usePartidas = () => {
-    const { data: partidas = [], isLoading, error } = useQuery({
+    const { data: partidas = [], isLoading, error, refetch } = useQuery({
         queryKey: ['partidas'],
         queryFn: getPartidas,
         // Tiempo de frescura de los datos (1 día) para evitar re-peticiones constantes
@@ -21,6 +21,7 @@ export const usePartidas = () => {
     return {
         partidas,
         isLoading,
-        error: error ? error.message : null
+        error: error ? error.message : null,
+        refetch
     };
 };

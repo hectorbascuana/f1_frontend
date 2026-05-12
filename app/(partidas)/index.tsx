@@ -13,19 +13,19 @@ import { useGameStore } from '../../core/store/useGameStore';
  */
 export default function MenuPartidasScreen() {
     // Extraemos la información del custom hook (Clean code)
-    const { partidas, isLoading, error } = usePartidas();
+    const { partidas, isLoading, error, refetch } = usePartidas();
     const limpiarPartida = useGameStore((state) => state.limpiarPartida);
 
     /**
-     * EFECTO DE LIMPIEZA
+     * EFECTO DE ENFOQUE Y LIMPIEZA
      * Usamos useFocusEffect para que cada vez que el usuario llegue a esta pantalla 
-     * (incluso volviendo atrás con el dedo), se resetee la partida activa en el Store.
-     * Esto garantiza que no haya rastro de partidas anteriores al abrir una nueva.
+     * (incluso volviendo atrás), se resetee la partida activa y se actualice la lista.
      */
     useFocusEffect(
         useCallback(() => {
             limpiarPartida();
-        }, [])
+            refetch(); // Forzamos la actualización de la lista de partidas
+        }, [limpiarPartida, refetch])
     );
 
 
