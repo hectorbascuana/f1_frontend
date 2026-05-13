@@ -14,14 +14,12 @@ const { width } = Dimensions.get('window');
 export default function DriverCard({ 
     piloto, 
     onPressOffers, 
-    onPressTransfer, 
     onPress,
     emptyLabel = "ASIENTO VACÍO",
     onPressEmpty
 }: { 
     piloto: Piloto | null, 
     onPressOffers?: () => void, 
-    onPressTransfer?: () => void, 
     onPress?: () => void,
     emptyLabel?: string,
     onPressEmpty?: () => void
@@ -86,9 +84,23 @@ export default function DriverCard({
                         )}
                     </View>
                     {/* Badge de Valoración General */}
-                    <View className="absolute -bottom-2 -right-2 bg-[#E10600] w-10 h-10 rounded-xl items-center justify-center border-2 border-[#121212]">
+                    <View className="absolute -bottom-2 -right-2 bg-[#E10600] w-10 h-10 rounded-xl items-center justify-center border-2 border-[#121212] z-10">
                         <Text className="text-white font-black text-xs italic">{piloto.estadisticas.valoracion}</Text>
                     </View>
+
+                    {/* Indicador de Evolución de Temporada */}
+                    {piloto.estadisticas.progresoTemporada !== 0 && (
+                        <View className="absolute -bottom-1 right-8 bg-[#1a1a1a] px-2 py-1 rounded-lg border border-[#333] flex-row items-center shadow-sm">
+                            <Ionicons 
+                                name={piloto.estadisticas.progresoTemporada > 0 ? "caret-up" : "caret-down"} 
+                                size={8} 
+                                color={piloto.estadisticas.progresoTemporada > 0 ? "#10b981" : "#E10600"} 
+                            />
+                            <Text className={`text-[9px] font-black ml-1 ${piloto.estadisticas.progresoTemporada > 0 ? 'text-[#10b981]' : 'text-[#E10600]'}`}>
+                                {piloto.estadisticas.progresoTemporada > 0 ? `+${piloto.estadisticas.progresoTemporada}` : piloto.estadisticas.progresoTemporada}
+                            </Text>
+                        </View>
+                    )}
                 </View>
 
                 {/* Información Personal */}
@@ -124,19 +136,11 @@ export default function DriverCard({
                                 </Text>
                             </Pressable>
                         ) : (
-                            <Pressable 
-                                onPress={onPressTransfer}
-                                className={`px-3 py-1.5 rounded-lg border flex-row items-center active:opacity-70 ${piloto.enTransferible ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-[#1a1a1a] border-[#222]'}`}
-                            >
-                                <Ionicons 
-                                    name={piloto.enTransferible ? "megaphone" : "add-circle-outline"} 
-                                    size={10} 
-                                    color={piloto.enTransferible ? "#818cf8" : "#555"} 
-                                />
-                                <Text className={`${piloto.enTransferible ? 'text-indigo-400' : 'text-[#555]'} font-black text-[8px] uppercase tracking-[0.5px] ml-1.5`}>
-                                    {piloto.enTransferible ? 'TRANSFERIBLE' : 'PONER EN VENTA'}
+                            <View className="bg-[#1a1a1a] border border-[#222] px-3 py-1.5 rounded-lg flex-row items-center opacity-40">
+                                <Text className="text-[#555] font-black text-[8px] uppercase tracking-[0.5px]">
+                                    0 OFERTAS
                                 </Text>
-                            </Pressable>
+                            </View>
                         )}
                     </View>
                 </View>

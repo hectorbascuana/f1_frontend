@@ -6,7 +6,6 @@ import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'rea
 import AlineacionModal from '../../../../../components/pilotos/AlineacionModal';
 import DriverCard from '../../../../../components/pilotos/DriverCard';
 import OffersModal from '../../../../../components/pilotos/OffersModal';
-import TransferModal from '../../../../../components/pilotos/TransferModal';
 import { useAlinearPiloto } from '../../../../../core/api/hooks/pilotos/useAlinearPiloto';
 import { usePilotosEscuderia } from '../../../../../core/api/hooks/pilotos/usePilotosEscuderia';
 import { useActiveGame } from '../../../../../hooks/store/useActiveGame';
@@ -22,7 +21,6 @@ export default function PilotosScreen() {
     const { mutate: alinear, isPending: alignPending } = useAlinearPiloto();
     const [selectedPiloto, setSelectedPiloto] = React.useState<Piloto | null>(null);
     const [modalOffersVisible, setModalOffersVisible] = React.useState(false);
-    const [modalTransferVisible, setModalTransferVisible] = React.useState(false);
 
     // Estados para Alineación
     const [modalAlineacionVisible, setModalAlineacionVisible] = React.useState(false);
@@ -87,7 +85,7 @@ export default function PilotosScreen() {
                     </View>
 
                     <TouchableOpacity
-                        onPress={() => router.push("/(partidas)/[id]/pilotos/mercado")}
+                        onPress={() => router.push(`/(partidas)/${partida?.id}/pilotos/mercado`)}
                         className="bg-[#151515] border border-[#222] p-3 rounded-2xl flex-row items-center shadow-sm active:opacity-70"
                     >
                         <View className="bg-[#E10600]/10 p-2 rounded-xl mr-2">
@@ -118,7 +116,6 @@ export default function PilotosScreen() {
                                 onPress={() => { setSelectedAsiento(1); setModalAlineacionVisible(true); }}
                                 onPressEmpty={() => { setSelectedAsiento(1); setModalAlineacionVisible(true); }}
                                 onPressOffers={() => { if (p1) { setSelectedPiloto(p1); setModalOffersVisible(true); } }}
-                                onPressTransfer={() => { if (p1) { setSelectedPiloto(p1); setModalTransferVisible(true); } }}
                             />
 
                             <View className="flex-row items-center mb-4 px-1 mt-2">
@@ -134,7 +131,6 @@ export default function PilotosScreen() {
                                 onPress={() => { setSelectedAsiento(2); setModalAlineacionVisible(true); }}
                                 onPressEmpty={() => { setSelectedAsiento(2); setModalAlineacionVisible(true); }}
                                 onPressOffers={() => { if (p2) { setSelectedPiloto(p2); setModalOffersVisible(true); } }}
-                                onPressTransfer={() => { if (p2) { setSelectedPiloto(p2); setModalTransferVisible(true); } }}
                             />
                         </View>
 
@@ -156,7 +152,6 @@ export default function PilotosScreen() {
                                             // informar de que debe asignarse a un asiento arriba.
                                         }}
                                         onPressOffers={() => { setSelectedPiloto(piloto); setModalOffersVisible(true); }}
-                                        onPressTransfer={() => { setSelectedPiloto(piloto); setModalTransferVisible(true); }}
                                     />
                                 ))}
                             </View>
@@ -176,16 +171,7 @@ export default function PilotosScreen() {
                     piloto={selectedPiloto}
                 />
 
-                {/* Modal de Transferencia */}
-                <TransferModal
-                    visible={modalTransferVisible}
-                    onClose={() => setModalTransferVisible(false)}
-                    piloto={selectedPiloto}
-                    onConfirm={(precio) => {
-                        console.log('Poner en venta por:', precio);
-                        setModalTransferVisible(false);
-                    }}
-                />
+
 
                 {/* Modal de Alineación */}
                 <AlineacionModal

@@ -83,7 +83,7 @@ export default function MercadoScreen() {
             <View className="pt-6 pb-0 px-6">
                 <View className="flex-row items-center justify-between mb-5">
                     <TouchableOpacity 
-                        onPress={() => router.back()}
+                        onPress={() => router.push("../")}
                         className="w-10 h-10 bg-[#151515] border border-[#222] rounded-full items-center justify-center shadow-sm active:opacity-70"
                     >
                         <Ionicons name="arrow-back" size={20} color="white" />

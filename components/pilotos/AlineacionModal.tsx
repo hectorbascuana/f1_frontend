@@ -81,8 +81,15 @@ export default function AlineacionModal({
                                     <View className="flex-1">
                                         <View className="flex-row items-center">
                                             <Text className="text-white font-black uppercase italic mr-2">{p.nombre}</Text>
-                                            <View className="bg-[#222] px-1.5 py-0.5 rounded">
-                                                <Text className="text-white text-[8px] font-bold">{p.estadisticas.valoracion}</Text>
+                                            <View className="bg-[#222] px-1.5 py-0.5 rounded flex-row items-center">
+                                                <Text className="text-white text-[8px] font-bold mr-1">{p.estadisticas.valoracion}</Text>
+                                                {p.estadisticas.progresoTemporada !== 0 && (
+                                                    <Ionicons 
+                                                        name={p.estadisticas.progresoTemporada > 0 ? "caret-up" : "caret-down"} 
+                                                        size={6} 
+                                                        color={p.estadisticas.progresoTemporada > 0 ? "#10b981" : "#E10600"} 
+                                                    />
+                                                )}
                                             </View>
                                         </View>
                                         <Text className="text-[#555] text-[10px] uppercase font-bold">

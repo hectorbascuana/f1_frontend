@@ -11,6 +11,7 @@ export interface EstadisticasPiloto {
     curvaLenta: number;
     salidas: number;
     consistencia: number;
+    progresoTemporada: number;
 }
 
 /**
