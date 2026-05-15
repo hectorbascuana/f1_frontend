@@ -19,14 +19,10 @@ const getInitialUrl = () => {
   const debuggerHost = Constants.expoConfig?.hostUri;
 
   if (debuggerHost) {
-    // debuggerHost suele venir en formato "192.168.1.13:8082". Nos quedamos solo con la IP.
     const ip = debuggerHost.split(':')[0];
-    console.log("IP: ", ip);
-    // Usamos el puerto 8081 para la API (el puerto 8082 es para Metro)
     return `http://${ip}:8081/api/`;
   }
 
-  // Fallback para emuladores
   return Platform.OS === 'android' ? 'http://10.0.2.2:8081/api/' : 'http://localhost:8081/api/';
 };
 

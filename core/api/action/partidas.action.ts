@@ -11,16 +11,9 @@ import { PartidaDTO } from '../../types/partidaDTO';
  */
 export const partidas = async (): Promise<Partida[]> => {
     try {
-        // Realizamos la petición tipada con el DTO (sin barra inicial para usar baseURL)
         const { data } = await api.get<PartidaDTO[]>('partida');
 
-        // Registro de datos recibidos para facilitar la trazabilidad durante el desarrollo
-        console.log('Datos de partidas recibidos (RAW):', JSON.stringify(data, null, 2));
-
-        // Mapeamos los datos al modelo de dominio
         const mappedData = mapPartidasFromDTOList(data);
-
-        console.log('Datos de partidas mapeados:', JSON.stringify(mappedData, null, 2));
 
         return mappedData;
     } catch (error) {
@@ -28,8 +21,6 @@ export const partidas = async (): Promise<Partida[]> => {
         throw new Error('No se han podido cargar las partidas del sistema.');
     }
 };
-
-// ... (resto de funciones existentes)
 
 /**
  * crearPartida (Action)

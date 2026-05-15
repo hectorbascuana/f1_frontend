@@ -222,16 +222,8 @@ export const useCarreras = (partidaId: number) => {
    */
   const handleFinishAndExit = useCallback(async () => {
     try {
-      console.log('[AVANCE] Iniciando proceso de finalización para partida:', partidaId);
       setIsAdvancing(true);
-      
-      // 1. Ejecutamos el avance en el servidor
-      console.log('[AVANCE] 1. Llamando a mutationAvanzar...');
       await mutationAvanzar.mutateAsync();
-      console.log('[AVANCE] 1. Respuesta recibida del servidor (OK)');
-      
-      // 2. Invalidamos las queries críticas
-      console.log('[AVANCE] 2. Invalidando todas las consultas de TanStack...');
       await queryClient.invalidateQueries({ queryKey: ['partida'] });
       await queryClient.invalidateQueries({ queryKey: ['escuderia'] });
       await queryClient.invalidateQueries({ queryKey: ['pilotos'] });
@@ -239,23 +231,15 @@ export const useCarreras = (partidaId: number) => {
       await queryClient.invalidateQueries({ queryKey: ['circuitos'] });
       await queryClient.invalidateQueries({ queryKey: ['circuito'] });
       await queryClient.invalidateQueries({ queryKey: ['carrera', 'start'] });
-      console.log('[AVANCE] 2. Invalidación completada');
 
-      // 3. Forzamos refetch de la partida actual para obtener el nuevo proximoCircuito
-      console.log('[AVANCE] 3. Solicitando refetch de la partida ID:', partidaId);
       const { data: rawPartida } = await api.get(`partida/${partidaId}`);
       const freshPartida = mapPartidaFromDTO(rawPartida);
       
-      // Actualizamos manualmente el cache de TanStack para que todos los hooks lo vean
       queryClient.setQueryData(['partida', partidaId.toString()], freshPartida);
       
-      console.log('[AVANCE] 3. Refetch y Cache manual completados. Nuevo proximoCircuito:', freshPartida?.proximoCircuito);
-      
-      console.log('[AVANCE] Finalización exitosa. Navegando al Dashboard...');
       setIsAdvancing(false);
       router.replace(`/(partidas)/${partidaId}` as any);
     } catch (err) {
-      console.error("[AVANCE] ERROR CRÍTICO:", err);
       setIsAdvancing(false);
       Alert.alert("Error", "No se ha podido procesar el avance de la temporada.");
     }
