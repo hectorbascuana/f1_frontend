@@ -29,6 +29,7 @@ export default function MenuPartidasScreen() {
     );
 
 
+    
 
     return (
         <View className="flex-1 bg-[#0a0a0a] pt-[50px]">
