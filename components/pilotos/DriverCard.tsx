@@ -1,9 +1,8 @@
+import { getDriverImage } from "@/constants/DriverAssets";
+import { Piloto } from "@/types/piloto";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Image, Text, View, Dimensions, Pressable } from "react-native";
-import { Piloto } from "@/types/piloto";
-import { BASE_URL } from "@/utils/api";
-import { getDriverImage } from "@/constants/DriverAssets";
+import { Dimensions, Image, Pressable, Text, View } from "react-native";
 
 const { width } = Dimensions.get('window');
 
@@ -110,9 +109,19 @@ export default function DriverCard({
                         <View className="w-1 h-1 bg-[#444] rounded-full mx-2" />
                         <Text className="text-[#555] text-[8px] font-black uppercase tracking-[2px]">{piloto.edad} AÑOS</Text>
                     </View>
-                    <Text className="text-white text-xl font-black italic uppercase tracking-[-0.5px] leading-tight mb-2">
-                        {piloto.nombre}
-                    </Text>
+                    <View className="flex-row"> 
+                        <Text className="text-white text-xl font-black italic uppercase tracking-[-0.5px] leading-tight mb-2">
+                            {piloto.nombre}
+                        </Text>
+                        {
+                        piloto.isRokie && ( // El piloto llega correctamente con el campo isRokie correcto. Al cumplirse esta condición, también se renderiza la palabra rokie. respecto al view, es necesario por el flex row que coloca su contenido horizontalmente en lugar de verticalmente.
+                            <Text className="text-green-600 mr-5">
+                                ROOKIE
+                            </Text>
+                        )}
+                        
+                    </View>
+                    
                     
                     {/* Fila Inferior: Valor y Acción de Mercado */}
                     <View className="flex-row items-center justify-between">

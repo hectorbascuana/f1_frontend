@@ -18,6 +18,8 @@ export const TEAM_IMAGES: { [key: string]: any } = {
     'assets/images/teams/racing-bulls.png': require('../assets/images/teams/racing-bulls.png'),
     'assets/images/teams/red-bull.png': require('../assets/images/teams/red-bull.png'),
     'assets/images/teams/williams.png': require('../assets/images/teams/williams.png'),
+    //Esta es la nueva ruta de la imagen que tendrá el nuevo equipo.
+    'assets/images/teams/andretti.png': require('../assets/images/teams/andretti.png')
 };
 
 /**
