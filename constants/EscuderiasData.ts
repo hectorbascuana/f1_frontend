@@ -171,5 +171,22 @@ export const ESCUDERIAS_DATA: Escuderia[] = [
         aerodinamicaCosto: 0,
         motorCosto: 0,
         durabilidadCosto: 0
+    },
+    /* Se añade la información como nuevo objeto. Es esta lista la que luego se mapea para mostrar a todos los equipos de la parrilla */
+    {
+        id: 12,
+        nombre: "Andretti Global",
+        imagen: "assets/images/teams/andretti.png",
+        presupuesto: 220.00,
+        aerodinamica: 99,
+        motor: 99,
+        durabilidad: 20,
+        tunelViento: 5,
+        bancoPruebas: 5,
+        escuelaPilotos: 5,
+        aerodinamicaCosto: 0,
+        motorCosto: 0,
+        durabilidadCosto: 0
+
     }
 ];
