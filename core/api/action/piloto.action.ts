@@ -20,7 +20,7 @@ export const obtenerPilotosEscuderia = async (escuderiaId: number): Promise<Pilo
                 piloto.ofertasPendientes = ofertas.length;
             })
         );
-
+        console.log(data) // Este console log se ejecuta cuando hace la petición al backend (abrir pantalla de pilotos). Como se muestra, devuelve toda la información de los pilotos de esa escudería incluido el campo isRookie
         return data;
     } catch (error) {
         console.error('Error al cargar pilotos de la escudería:', error);

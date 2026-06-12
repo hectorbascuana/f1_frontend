@@ -33,6 +33,7 @@ export interface Piloto {
     enTransferible?: boolean;
     ofertas?: OfertaPiloto[];
     ofertasPendientes?: number;
+    isRokie: boolean;
 }
 
 /**
